@@ -14,18 +14,19 @@
 template <typename T>
 class Test {
     static_assert(std::is_integral_v<T>, "Test only works with integral types");
+public:
+    enum class SkipPolicy { //параметр для пропуска тестов
+        NONE,           // не пропускать
+        SKIP_SLOW,      // пропускать медленные на больших данных
+        SKIP_EXTREME    // пропускать все что > N
+    };
 
 public:
     using FuncPtr = void(*)(T*, size_t);  // простой указатель
 
-    Test(FuncPtr run, std::string folder)
-        : test_run(run), folder(folder) {
-    };
-    
-    /*
-    Test(std::function<void(T*, size_t)> run, std::string folder)
-        : test_run(run), folder(folder) {
-    }*/
+    Test(FuncPtr run, std::string folder, SkipPolicy policy)
+        : test_run(run), folder(folder), policy(policy) {
+    };    
 
     void run_all() {
         namespace fs = std::filesystem;
@@ -62,7 +63,11 @@ private:
         try {
             // 1. Загрузка данных
             auto [size, input_data] = load_test_data(input_file);
-
+            
+            if (should_skip_test(size)) { //если тест нужно пропустить...
+                std::cout << "Test " << test_num << ": SKIPPED (size=" << size << ")\n";
+                return;
+            };
             // 2. Копия для сортировки
             auto data_to_sort = std::make_unique<T[]>(size);
             std::copy(input_data.get(), input_data.get() + size, data_to_sort.get());
@@ -216,8 +221,28 @@ private:
             std::to_string(test_num) + "." + extension;
     }
 
-private:
-    //std::function<void(T*, size_t)> test_run;
-    FuncPtr test_run;
-    std::string folder;
+private:    
+    FuncPtr test_run; //функция для тестирования
+    std::string folder; //папка с тестами
+    SkipPolicy policy;
+    
+    //служебная функция, определяющая надо ли пропускать тесты
+    bool should_skip_test(size_t data_size) {
+        
+        switch (policy) {
+        case SkipPolicy::NONE:
+            return false;
+
+        case SkipPolicy::SKIP_SLOW:
+            return (data_size > 999999);            
+
+        case SkipPolicy::SKIP_EXTREME:
+            // Все что больше 10M
+            return data_size > 10000000;
+
+        default:
+            return false;
+        }
+    }
+    
 };

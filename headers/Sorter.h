@@ -21,16 +21,16 @@ public:
     };
 
     //модифицированная сортировка пузырьком
-    static void bubble_sort_opt(T* data, size_t size) {
-        bool flag = true;
-        for (size_t i = size - 1, flag; i != 0; --i) {
-            flag = false;
+    static void bubble_sort_opt(T* data, size_t size) {        
+        for (size_t i = size - 1; i != 0; --i) {
+            bool swapped = false;
             for (size_t j = 0; j < i; ++j) {
                 if (data[j] > data[j + 1]) {
                     swap_idx(data, j, j + 1);
-                    flag = true;
-                }
+                    swapped = true;
+                }                
             }
+            if (!swapped) break;
         }
     };
 // ---------- Insertion sort -----------------    
@@ -88,12 +88,12 @@ public:
     // 1. Стандартный (gap = n/2, n/4, ...)
     static void shell_sort(T* data, size_t size) {
         if (size <= 1) return;
-        shell_sort_core(data, size, size / 2,
+        shell_sort_core_func(data, size, size / 2,
             [](size_t g) { return g / 2; });
     }
 
     // 2. Последовательность Кнута (1, 4, 13, 40, 121, ...)
-    static void shell_sort_knuth(T* data, size_t size) {
+    static void shell_sort_knuth_func(T* data, size_t size) {
         if (size <= 1) return;
 
         // Вычисляем максимальный gap < size
@@ -102,12 +102,25 @@ public:
             gap = 3 * gap + 1;
         }
 
-        shell_sort_core(data, size, gap,
+        shell_sort_core_func(data, size, gap,
             [](size_t g) { return (g - 1) / 3; });  // точная формула
     }
 
+    // 2а Последовательность Кнута с предвычисленным массивом(1, 3, 7, 15, 31, ...)
+    static void shell_sort_knuth_arr(T* data, size_t size) {
+
+        if (size > MAX_KNUTH_SIZE) { //длина предрассчитанного массива gap ограничена
+            throw std::invalid_argument(
+                "shell_sort_knuth: size " + std::to_string(size) +
+                " exceeds maximum supported size " + std::to_string(MAX_KNUTH_SIZE)
+            );
+        };
+        if (size <= 1) return;
+        shell_sort_core_arr(data, size, KNUTH_GAPS, std::size(KNUTH_GAPS));
+    }
+
     // 3. Последовательность Хиббарда (1, 3, 7, 15, 31, ...)
-    static void shell_sort_hibbard(T* data, size_t size) {
+    static void shell_sort_hibbard_func(T* data, size_t size) {
         if (size <= 1) return;
 
         // Находим максимальный 2^k - 1 < size
@@ -115,38 +128,33 @@ public:
         while ((1 << k) - 1 < size) ++k;
         size_t gap = (1 << (k - 1)) - 1;  // предыдущая степень
 
-        shell_sort_core(data, size, gap,
+        shell_sort_core_func(data, size, gap,
             [](size_t g) { return (g + 1) / 2 - 1; });
+    }
+    // 3.а Последовательность Хиббарда с предвычисленным массивом(1, 3, 7, 15, 31, ...)
+    static void shell_sort_hibbard_arr(T* data, size_t size) {
+        
+        if (size > MAX_HIBBARD_SIZE) { //длина предрассчитанного массива gap ограничена
+            throw std::invalid_argument(
+                "shell_sort_hibbard: size " + std::to_string(size) +
+                " exceeds maximum supported size " + std::to_string(MAX_HIBBARD_SIZE)
+            );
+        };
+        if (size <= 1) return;
+        shell_sort_core_arr(data, size, HIBBARD_GAPS, std::size(HIBBARD_GAPS));
     }
 
     // 4. Последовательность Седжвика (1, 5, 19, 41, 109,...)
     static void shell_sort_sedgewick(T* data, size_t size) {
         
-        if (size > MAX_SUPPORTED_SIZE) { //длина предрассчитанного массива gap ограничена
+        if (size > MAX_SEDGEWICK_SIZE) { //длина предрассчитанного массива gap ограничена
             throw std::invalid_argument(
                 "shell_sort_sedgewick: size " + std::to_string(size) +
-                " exceeds maximum supported size " + std::to_string(MAX_SUPPORTED_SIZE)
+                " exceeds maximum supported size " + std::to_string(MAX_SEDGEWICK_SIZE)
             );
         };
-        if (size <= 1) return;
-        
-        //определяем индекс минимального гэп, меньшего чем наш размер (берем следующий, уменьшать будем внутри цикла)
-        size_t initial_idx = binary_find(SEDGEWICK_GAPS, size, std::size(SEDGEWICK_GAPS));        
-        
-        // Сортируем с gaps в обратном порядке (от большего к меньшему)
-        for(size_t gap_idx = initial_idx; gap_idx > 0;) {
-            size_t gap = SEDGEWICK_GAPS[--gap_idx];
-            // Вставками с шагом gap
-            for (size_t i = gap; i < size; ++i) {
-                T current = data[i];
-                size_t j = i;
-                while (j >= gap && data[j - gap] > current) {
-                    data[j] = data[j - gap];
-                    j -= gap;
-                }
-                data[j] = current;
-            }
-        }
+        if (size <= 1) return;                
+        shell_sort_core_arr(data, size, SEDGEWICK_GAPS, std::size(SEDGEWICK_GAPS));    
     }
     // ---------- Selection sort -----------------    
     //сортировка выбором
@@ -173,9 +181,9 @@ public:
     static void bubble_sort(Container& container) {
         bubble_sort(container.data(), container.size());
     };
-private:
-    //константы для последовательности Седжвика
-    
+private:    
+    //================= Константы для версий сортировок Шелла ============//
+    //Последовательность Седживика
     static constexpr size_t SEDGEWICK_GAPS[] = {
     1, 5, 19, 41, 109, 209, 505, 929, 2161, 3905, 8929,
     16001, 36289, 64769, 146305, 260609, 587521, 1045505,
@@ -183,11 +191,32 @@ private:
     150958081, 268386305, 603906049, 1073643521, 2415771649
     // для размеров 32 бит
     };
-    static constexpr size_t MAX_SUPPORTED_SIZE = 4831543297ULL; //(2415771649 * 2 - 1);
+    static constexpr size_t MAX_SEDGEWICK_SIZE = 4831543297ULL; //(2415771649 * 2 - 1);
+    
+    // Последовактельность Кнута
+    static constexpr size_t KNUTH_GAPS[] = {
+        1, 4, 13, 40, 121, 364, 1093, 3280, 9841, 29524,
+        88573, 265720, 797161, 2391484, 7174453, 21523360,
+        64570081, 193710244, 581130733, 1743392200
+    };
 
-    // Обобщенная версия сортировки Шелла
+    static constexpr size_t MAX_KNUTH_SIZE = 3486784399ULL; //(1743392200 - 1) * 2 - 1; // 3486784399
+
+    //Последовательность Хиббарда
+    static constexpr size_t HIBBARD_GAPS[] = {
+        1, 3, 7, 15, 31, 63, 127, 255, 511, 1023,
+        2047, 4095, 8191, 16383, 32767, 65535, 131071, 262143,
+        524287, 1048575, 2097151, 4194303, 8388607, 16777215,
+        33554431, 67108863, 134217727, 268435455, 536870911,
+        1073741823, 2147483647
+    };
+
+    static constexpr size_t MAX_HIBBARD_SIZE = 4294967295ULL;//(2147483647 - 1) * 2 - 1;
+
+    //================= Вспомогательные обобщенные функции ============//
+    // Обобщенная версия сортировки Шелла с функцией получения следующего gap
     template<typename GapFunc>
-    static void shell_sort_core(T* data, size_t size, size_t initial_gap, GapFunc next_gap) {
+    static void shell_sort_core_func(T* data, size_t size, size_t initial_gap, GapFunc next_gap) {
         if (size <= 1) return;
 
         size_t gap = initial_gap;
@@ -208,6 +237,28 @@ private:
             gap = next_gap(gap);
         }
     }
+
+    // Обобщенная версия сортировки Шелла с предрассчитанным массивом gap
+    static void shell_sort_core_arr(T* data, const size_t size, const uint64_t* gaps, const size_t gaps_size) {
+        
+        size_t initial_idx = binary_find_gap(gaps, size, gaps_size);
+        for (size_t i = 0; i <= initial_idx; ++i) {
+            size_t gap_idx = initial_idx - i;  // обратный порядок
+            size_t gap = gaps[gap_idx];
+
+            for (size_t i = gap; i < size; ++i) {
+                T current = data[i];
+                size_t j = i;
+                while (j >= gap && data[j - gap] > current) {
+                    data[j] = data[j - gap];
+                    j -= gap;
+                }
+                data[j] = current;
+            }
+        }
+    };
+    
+    //================= Служебные вспомогательные функции ============//
     
     //служебная функция обмена элементов с заданными индексами    
     static void swap_idx(T* data, size_t a, size_t b) noexcept {
@@ -217,7 +268,7 @@ private:
     };
 
     //поиск (бинарный) места для вставки
-    static size_t binary_find(const T* data, const T& val, size_t n) {
+    static size_t binary_find(const T* data, const T& val, size_t n) noexcept {
         // Ищем позицию для вставки val в отсортированный массив data[0..n-1]
         size_t low = 0;
         size_t high = n;  // high = n, потому что вставлять можно после последнего элемента
@@ -234,5 +285,27 @@ private:
         }
 
         return low;  // low == high - позиция для вставки
+    };
+
+    //поиск (бинарный) для начального gap для сортировок
+    static size_t binary_find_gap(const uint64_t* data, const uint64_t& val, const size_t n) noexcept {
+        
+        if (n == 0 || data[0] >= val) return 0;  // нет подходящих
+
+        size_t low = 0;    // гарантированно < val
+        size_t high = n;   // может быть >= val
+
+        // Инвариант: data[left] < val, data[right] может быть >= val
+        while (high - low > 1) {
+            size_t mid = low + (high - low) / 2;
+
+            if (data[mid] < val) {
+                low = mid;  // mid тоже < val, двигаем левую границу
+            }
+            else {
+                high = mid;  // mid >= val, двигаем правую границу
+            }
+        }        
+        return low;
     }
 };
