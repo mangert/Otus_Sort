@@ -13,22 +13,16 @@
 
 template <typename T>
 class Test {
-    static_assert(std::is_integral_v<T>, "Test only works with integral types");
-public:
-    enum class SkipPolicy { //параметр для пропуска тестов
-        NONE,           // не пропускать
-        SKIP_SLOW,      // пропускать медленные на больших данных
-        SKIP_EXTREME    // пропускать все что > N
-    };
+    static_assert(std::is_integral_v<T>, "Test only works with integral types");    
 
 public:
-    using FuncPtr = void(*)(T*, size_t);  // простой указатель
+    using FuncPtr = void(*)(T*, size_t);  // сигнатура функции сортировки
 
-    Test(FuncPtr run, std::string folder, SkipPolicy policy)
-        : test_run(run), folder(folder), policy(policy) {
+    Test(FuncPtr run, std::string folder)
+        : test_run(run), folder(folder) {
     };    
 
-    void run_all() {
+    void run_all(size_t max_supported_size = 0) {
         namespace fs = std::filesystem;
 
         std::cout << "\n========== Testing: " << folder << " ==========\n";
@@ -44,7 +38,7 @@ public:
                 break;
             }
 
-            run_test(i, input_file, output_file);
+            run_test(i, input_file, output_file, max_supported_size);
         }
 
         std::cout << "========== End testing ==========\n\n";
@@ -57,14 +51,15 @@ private:
     };
 
     void run_test(int test_num, const std::string& input_file,
-        const std::string& output_file) {
+        const std::string& output_file, size_t max_supported_size = 0) {
+        
         std::cout << "Test " << test_num << ": ";
 
         try {
             // 1. Загрузка данных
-            auto [size, input_data] = load_test_data(input_file);
+            auto [size, input_data] = load_test_data(input_file, max_supported_size);
             
-            if (should_skip_test(size)) { //если тест нужно пропустить...
+            if (!input_data) { //если тест нужно пропустить...
                 std::cout << "Test " << test_num << ": SKIPPED (size=" << size << ")\n";
                 return;
             };
@@ -102,7 +97,7 @@ private:
         }
     }
 
-    TestData load_test_data(const std::string& filename) {
+    TestData load_test_data(const std::string& filename, size_t max_supported_size) {
         std::ifstream file(filename);
         if (!file.is_open()) {
             throw std::runtime_error("Cannot open: " + filename);
@@ -119,6 +114,11 @@ private:
         if (ec != std::errc()) {
             throw std::runtime_error("Invalid size in: " + filename);
         }
+
+        //если размер данных превышает заданную для теста границу, данные не забираем (тест будет пропущен)
+        if (max_supported_size > 0 && (size > max_supported_size)) {
+            return { size, nullptr};
+        };
 
         // 2. Читаем данные
         std::string data_line;
@@ -223,26 +223,5 @@ private:
 
 private:    
     FuncPtr test_run; //функция для тестирования
-    std::string folder; //папка с тестами
-    SkipPolicy policy;
-    
-    //служебная функция, определяющая надо ли пропускать тесты
-    bool should_skip_test(size_t data_size) {
-        
-        switch (policy) {
-        case SkipPolicy::NONE:
-            return false;
-
-        case SkipPolicy::SKIP_SLOW:
-            return (data_size > 999999);            
-
-        case SkipPolicy::SKIP_EXTREME:
-            // Все что больше 10M
-            return data_size > 10000000;
-
-        default:
-            return false;
-        }
-    }
-    
+    std::string folder; //папка с тестами    
 };

@@ -2,59 +2,31 @@
 #include "generator.cpp"
 #include "Sorter.h"
 #include "Test.h"
+#include "test_cases.cpp"
 
 int main() {
-	
-	//Установки программы тестирования
-	//набор папок
-	std::string test_folders[] = {"0.random", "1.digits", "2.sorted", "3.revers"};	
-	
-	//набор функций
-	using FuncPtr = void(*)(uint32_t*, size_t); //для всех тестов, кроме digits
-	FuncPtr sort_funcs_all[10] = {
-		Sorter<uint32_t>::insertion_sort_shift,
-		Sorter<uint32_t>::insertion_sort_bin,
-		Sorter<uint32_t>::shell_sort,
-		Sorter<uint32_t>::shell_sort_knuth_arr,
-		Sorter<uint32_t>::shell_sort_knuth_func,
-		Sorter<uint32_t>::shell_sort_hibbard_arr,
-		Sorter<uint32_t>::shell_sort_hibbard_func,
-		Sorter<uint32_t>::shell_sort_sedgewick,
-		Sorter<uint32_t>::bubble_sort,
-		Sorter<uint32_t>::bubble_sort_opt,
-	};
-	
-	using FuncPtrDig = void(*)(uint8_t*, size_t); //только для папки digits
-	FuncPtrDig sort_funcs_dig[10] = {
-		Sorter<uint8_t>::insertion_sort_shift,
-		Sorter<uint8_t>::insertion_sort_bin,
-		Sorter<uint8_t>::shell_sort,
-		Sorter<uint8_t>::shell_sort_knuth_arr,
-		Sorter<uint8_t>::shell_sort_knuth_func,
-		Sorter<uint8_t>::shell_sort_hibbard_arr,
-		Sorter<uint8_t>::shell_sort_hibbard_func,
-		Sorter<uint8_t>::shell_sort_sedgewick,
-		Sorter<uint8_t>::bubble_sort,
-		Sorter<uint8_t>::bubble_sort_opt,
-	};	
-	for (auto& folder : test_folders) {
-		
-		for (size_t func = 3; func != 10; ++func) {
-			std::cout << "----------- " << func << " ---------------" << std::endl;
-			int p = 0;
-			if (func < 8) p = 2;
-			if (folder == test_folders[2]) {
-				Test<uint8_t> test(sort_funcs_dig[func], folder, Test<uint8_t>::SkipPolicy(p));
-				test.run_all();
-			}
-			else {
-				Test<uint32_t> test(sort_funcs_all[func], folder, Test<uint32_t>::SkipPolicy(p));
-				test.run_all();
-			}
-			std::cout << "----------- end " << func << " ---------------" << std::endl;
-		}	
-		
-	};
+	// Получаем все тестовые случаи
+	auto test_cases_32 = get_all_tests_uint32();
+	auto test_cases_8 = get_all_tests_uint8();
+
+	std::string folders[] = { "0.random", "1.digits", "2.sorted", "3.revers" };
+
+	// Проходим по алгоритмам
+	for (const auto& test_case : test_cases_32) {
+		std::cout << "\n\n=========================================\n";
+		std::cout << "ALGORITHM: " << test_case.name << "\n";
+		std::cout << "=========================================\n";
+
+		// Проходим по папкам (кроме digits)
+		for (const auto& folder : folders) {
+			if (folder == "1.digits") continue;  // digits тестируем отдельно
+
+			std::cout << "\n--- Data type: " << folder << " ---\n";
+
+			Test<uint32_t> test(test_case.function, folder);
+			test.run_all(test_case.max_size);
+		}
+	}
 	
 	/*Test<uint32_t> test([](uint32_t* data, size_t size) {
 		Sorter<uint32_t>::bubble_sort(data, size);
