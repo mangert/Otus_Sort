@@ -12,7 +12,7 @@ endif()
 project ("Sorts")
 
 # Add source to this project's executable.
-add_executable (Sorts "src/main.cpp" "src/test_cases.cpp")
+add_executable (Sorts "src/main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Sorts PROPERTY CXX_STANDARD 20)

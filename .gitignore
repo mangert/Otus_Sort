@@ -21,3 +21,4 @@ Makefile
 Tests/
 #черновики и вспомогательные файлы
 generator.cpp
+generator.cpp.bakcup
