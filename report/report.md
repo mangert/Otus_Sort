@@ -2,9 +2,9 @@
 
 ### Часть 1 
 
-BUB1. Реализация алгоритма **BubbleSort** [`static void bubble_sort(T* data, size_t size)`](../headers/Sorter.h).
-INS1. Реализация алгоритма **InsertionSort** [`static void insertion_sort(T* data, size_t size)`](../headers/Sorter.h).
-SHS1. Реализация алгоритма **ShellSort** [`static void shell_sort(T* data, size_t size)`](../headers/Sorter.h).
+BUB1. Реализация алгоритма **BubbleSort** [`static void bubble_sort(T* data, size_t size)`](../headers/Sorter.h).<br>
+INS1. Реализация алгоритма **InsertionSort** [`static void insertion_sort(T* data, size_t size)`](../headers/Sorter.h).<br>
+SHS1. Реализация алгоритма **ShellSort** [`static void shell_sort(T* data, size_t size)`](../headers/Sorter.h).<br>
 
 Сравнительные таблицы времени сортировки случайных массивов для каждого алгоритма представлены в третьей части отчета.
 
@@ -12,15 +12,15 @@ SHS1. Реализация алгоритма **ShellSort** [`static void shell_
 
 ### Часть 2
 
-BUB2. Оптимизированная реализация алгоритма **BubbleSort** [`static void bubble_sort_opt(T* data, size_t size)`](../headers/Sorter.h).
-INS2. Оптимизированная реализация алгоритма **InsertionSort** (сдвиг вместо обмена) [`static void insertion_sort_shift(T* data, size_t size)`](../headers/Sorter.h).
-INS3. Оптимизированая реализация алгоритма **InsertionSort** (бинарный поиск места вставки) [`static void insertion_sort_bin(T* data, size_t size)`](../headers/Sorter.h).
-SHS2, SHS3. Оптимизированые алгоритмы **ShellSort** - сделаны реализации с последовательностью Кнута, Хиббарда и Седжвика:
-	***Кнут:*** [`static void shell_sort_knuth_func(T* data, size_t size)`](../headers/Sorter.h).
-	***Кнут:*** [`static void shell_sort_knuth_arr(T* data, size_t size)`](../headers/Sorter.h) - модификация с предрассчитанными интервалами.
-	***Хиббард:*** [`static void shell_sort_hibbard_func(T* data, size_t size)`](../headers/Sorter.h).
-	***Хиббард:*** [`static void shell_sort_hibbard_arr(T* data, size_t size)`](../headers/Sorter.h)- модификация с предрассчитанными интервалами.
-	***Седжвик:*** [`static void shell_sort_sedgewick(T* data, size_t size)`](../headers/Sorter.h) с предрассчитанными интервалами.
+BUB2. Оптимизированная реализация алгоритма **BubbleSort** [`static void bubble_sort_opt(T* data, size_t size)`](../headers/Sorter.h).<br>
+INS2. Оптимизированная реализация алгоритма **InsertionSort** (сдвиг вместо обмена) [`static void insertion_sort_shift(T* data, size_t size)`](../headers/Sorter.h).<br>
+INS3. Оптимизированая реализация алгоритма **InsertionSort** (бинарный поиск места вставки) [`static void insertion_sort_bin(T* data, size_t size)`](../headers/Sorter.h).<br>
+SHS2, SHS3. Оптимизированые алгоритмы **ShellSort** - сделаны реализации с последовательностью Кнута, Хиббарда и Седжвика:<br>
+	***Кнут:*** [`static void shell_sort_knuth_func(T* data, size_t size)`](../headers/Sorter.h).<br>
+	***Кнут:*** [`static void shell_sort_knuth_arr(T* data, size_t size)`](../headers/Sorter.h) - модификация с предрассчитанными интервалами.<br>
+	***Хиббард:*** [`static void shell_sort_hibbard_func(T* data, size_t size)`](../headers/Sorter.h).<br>
+	***Хиббард:*** [`static void shell_sort_hibbard_arr(T* data, size_t size)`](../headers/Sorter.h)- модификация с предрассчитанными интервалами.<br>
+	***Седжвик:*** [`static void shell_sort_sedgewick(T* data, size_t size)`](../headers/Sorter.h) с предрассчитанными интервалами.<br>
 
 Сравнительные таблицы времени сортировки случайных массивов для каждого алгоритма представлены в третьей части отчета.	
 
@@ -28,11 +28,13 @@ SHS2, SHS3. Оптимизированые алгоритмы **ShellSort** - с
 
 ### Часть 3
 
-**Шаблонный класс для тестов**: [`class Test`](../headers/Test.h), консольный вывод результатов тестирования [`output.txt`](output.txt)
-Для прогона всех алгоритмов через приложенный комплекс тестов сформированы параметры запуска тестов - [`test_cases.cpp`](../src/test_cases.cpp).
+**Шаблонный класс для тестов**: [`class Test`](../headers/Test.h), консольный вывод результатов тестирования [`output.txt`](output.txt)<br>
+Для прогона всех алгоритмов через приложенный комплекс тестов сформированы параметры запуска тестов - [`test_cases.cpp`](../src/test_cases.cpp).<br>
+
+Запись чисел отсортированного массива в файл результата:<br>
 Функция запуска тестов шаблонного класса тестирования принимает опциональный параметр, определяющий, следует ли записывать отсортированный массив в файл. Для экономии времени и места полная программа тестирования проводилась без записи отсортированного массива в файлы (проверка данных в памяти). 
 Отдельно были запущены тесты сортировки с последовательностью Седжвика с записью в файлы, один из результирующих файлов представлен как образец [`test.5.sorted`](test.5.sorted)
-Консольном выводе [`output.txt`](output.txt) этот блок вывода находится после вывода комплексного тестирования.
+В консольном выводе [`output.txt`](output.txt) этот блок вывода находится после вывода комплексного тестирования.
 
 
 ### Анализ результатов тестирования алгоритмов сортировки

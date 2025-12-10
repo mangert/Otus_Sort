@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <vector>
 #include <iostream>
 #include "Sorter.h"
@@ -9,7 +9,7 @@ struct TestCase32 {
 	using FuncPtr = void(*)(uint32_t*, size_t);
 	FuncPtr function;
 	std::string name;
-	size_t max_size;  // 0 = без ограничений
+	size_t max_size;  // 0 = Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№
 
 	TestCase32(FuncPtr func, std::string n, size_t max = 0)
 		: function(func), name(std::move(n)), max_size(max) {
@@ -18,7 +18,7 @@ struct TestCase32 {
 
 inline std::vector<TestCase32> get_all_tests_uint32() {
 	return {
-		// Медленные алгоритмы - маленькие лимиты
+		// РњРµРґР»РµРЅРЅС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ - РјР°Р»РµРЅСЊРєРёРµ Р»РёРјРёС‚С‹
 		{Sorter<uint32_t>::bubble_sort, "bubble", 100000},
 		{Sorter<uint32_t>::bubble_sort_opt, "bubble_opt", 200000},
 		{Sorter<uint32_t>::insertion_sort, "insertion", 500000},
@@ -26,7 +26,7 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 		{Sorter<uint32_t>::insertion_sort_bin, "insertion_bin", 1000000},
 		{Sorter<uint32_t>::selection_sort, "selection", 500000},
 
-		// Быстрые алгоритмы - без ограничений
+		// Р‘С‹СЃС‚СЂС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№
 		{Sorter<uint32_t>::shell_sort, "shell", 0},
 		{Sorter<uint32_t>::shell_sort_knuth_arr, "shell_knuth_arr", 0},
 		{Sorter<uint32_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
@@ -36,7 +36,7 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 	};
 }
 
-// Для uint8_t (digits)
+// Р”Р»СЏ uint8_t (digits)
 struct TestCase8 {
 	using FuncPtr = void(*)(uint8_t*, size_t);
 	FuncPtr function;
@@ -50,7 +50,7 @@ struct TestCase8 {
 
 inline std::vector<TestCase8> get_all_tests_uint8() {
 	return {
-		// Для uint8_t можно больше - меньше памяти
+		// Р”Р»СЏ uint8_t РјРѕР¶РЅРѕ Р±РѕР»СЊС€Рµ - РјРµРЅСЊС€Рµ РїР°РјСЏС‚Рё
 		{Sorter<uint8_t>::bubble_sort, "bubble", 200000},
 		{Sorter<uint8_t>::bubble_sort_opt, "bubble_opt", 500000},
 		{Sorter<uint8_t>::insertion_sort, "insertion", 500000},
@@ -58,7 +58,7 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 		{Sorter<uint8_t>::insertion_sort_bin, "insertion_bin", 1000000},
 		{Sorter<uint8_t>::selection_sort, "selection", 500000},
 		
-		// Быстрые алгоритмы - без ограничений
+		// Р‘С‹СЃС‚СЂС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ - Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёР№
 		{Sorter<uint8_t>::shell_sort, "shell", 0},
 		{Sorter<uint8_t>::shell_sort_knuth_arr, "shell_knuth_arr", 0},
 		{Sorter<uint8_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
