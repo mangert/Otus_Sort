@@ -19,3 +19,5 @@ Makefile
 
 #Test data
 Tests/
+#черновики и вспомогательные файлы
+generator.cpp

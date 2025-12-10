@@ -3,8 +3,10 @@
 #include <functional>
 #include <string>
 
-template <std::integral T>
+template<typename T>
+requires std::totally_ordered<T> //принимаем только типы, у которых есть оператор < (для простоты - чтобы компаратор не передавать)
 class Sorter {
+
 public:        
 // ---------- Bubble sort -----------------
 
@@ -158,7 +160,7 @@ public:
     }
     // ---------- Selection sort -----------------    
     //сортировка выбором
-    static void selection_sort(T* data, size_t size) {
+    static void selection_sort(T* data, size_t size) { //это к следующей домашке относится, еще доработаю
 
         for (size_t i = 0; i != size - 1; ++i) {
             size_t min_idx = i;
@@ -170,17 +172,7 @@ public:
                 swap_idx(data, min_idx, i);
         };
     };
-    
-   // 6. quick_sort (нужен partition)
-   // 7. merge_sort (нужен merge)
-   // 8. heap_sort (нужны heapify)
-   // 9. counting_sort (если требуется)
 
-    //TODO Перегрузки всех сортировок для контейнеров с .data() и .size()
-    template <typename Container>
-    static void bubble_sort(Container& container) {
-        bubble_sort(container.data(), container.size());
-    };
 private:    
     //================= Константы для версий сортировок Шелла ============//
     //Последовательность Седживика
@@ -193,7 +185,7 @@ private:
     };
     static constexpr size_t MAX_SEDGEWICK_SIZE = 4831543297ULL; //(2415771649 * 2 - 1);
     
-    // Последовактельность Кнута
+    // Последовательность Кнута
     static constexpr size_t KNUTH_GAPS[] = {
         1, 4, 13, 40, 121, 364, 1093, 3280, 9841, 29524,
         88573, 265720, 797161, 2391484, 7174453, 21523360,

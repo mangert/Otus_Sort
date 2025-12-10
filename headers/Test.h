@@ -22,7 +22,7 @@ public:
         : test_run(run), folder(folder) {
     };    
 
-    void run_all(size_t max_supported_size = 0) {
+    void run_all(size_t max_supported_size = 0, bool save_res = false) {
         namespace fs = std::filesystem;
 
         std::cout << "\n========== Testing: " << folder << " ==========\n";
@@ -38,7 +38,7 @@ public:
                 break;
             }
 
-            run_test(i, input_file, output_file, max_supported_size);
+            run_test(i, input_file, output_file, max_supported_size, save_res);
         }
 
         std::cout << "========== End testing ==========\n\n";
@@ -51,7 +51,7 @@ private:
     };
 
     void run_test(int test_num, const std::string& input_file,
-        const std::string& output_file, size_t max_supported_size = 0) {
+        const std::string& output_file, size_t max_supported_size = 0, bool save_res = false) {
         
         std::cout << "Test " << test_num << ": ";
 
@@ -82,6 +82,13 @@ private:
                 << " | Size: " << size
                 << " | Time: " << duration.count() << " ms\n";
 
+            // 5. Сохранение результата в файл
+            if (save_res) {
+                std::string result_file = get_test_path(test_num, "sorted");
+                save_result(result_file, data_to_sort.get(), size);                
+                std::cout << "  Result saved to: " << result_file << "\n";                
+            }            
+            
             // Дополнительная проверка для больших тестов
             if (size > 100000000) {
                 bool is_sorted = std::is_sorted(data_to_sort.get(),
@@ -215,6 +222,39 @@ private:
 
         return (count == size);
     }
+
+    //функция записи отсортированного массива в файл
+    void save_result(const std::string& filename, const T* sorted_data, size_t size) {
+        // Для очень больших массивов ограничиваем вывод
+        /*if (size > 100000) {
+            std::ofstream file(filename);
+            if (!file.is_open()) {
+                std::cerr << "  WARNING: Cannot open result file: " << filename << "\n";
+                return;
+            }
+
+            file << size << "\n";
+            file << "[Result saved for large array of size " << size << "]";
+            file.close();
+            return;
+        }*/
+
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "  WARNING: Cannot open result file: " << filename << "\n";
+            return;
+        }
+
+        // Записываем отсортированные данные
+        for (size_t i = 0; i < size; ++i) {
+            file << static_cast<uint64_t>(sorted_data[i]);
+            if (i < size - 1) {
+                file << " ";
+            }
+        }
+
+        file.close();
+    };
 
     std::string get_test_path(int test_num, const std::string& extension) {
         return std::string(TEST_DIR) + "/" + folder + "/test." +
