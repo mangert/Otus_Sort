@@ -160,19 +160,33 @@ public:
     }
     // ---------- Selection sort -----------------    
     //сортировка выбором
-    static void selection_sort(T* data, size_t size) { //это к следующей домашке относится, еще доработаю
+    static void selection_sort(T* data, size_t size) {
 
         for (size_t i = 0; i != size - 1; ++i) {
             size_t min_idx = i;
             for (size_t j = i + 1; j != size; ++j) {
                 if (data[j] < data[min_idx])
                     min_idx = j;
-            }
-            if (min_idx != i)
-                swap_idx(data, min_idx, i);
+            }          
+            swap_idx(data, min_idx, i);
         };
     };
 
+    // ---------- Heap sort -----------------    
+    static void heap_sort(T* data, size_t size) {
+
+        //1. построение первоначальной кучи
+        for(size_t root = size / 2; root > 0;) {
+            heapify(data, --root, size);
+        };        
+        
+        //2. Собственно сортировка
+        for (size_t i = size; i > 0;) {            
+            swap_idx(data, 0, --i);
+            heapify(data, 0, i);
+        };        
+    };    
+    
 private:    
     //================= Константы для версий сортировок Шелла ============//
     //Последовательность Седживика
@@ -275,7 +289,6 @@ private:
                 high = mid;     // Ищем в левой половине (включая текущий mid)
             }
         }
-
         return low;  // low == high - позиция для вставки
     };
 
@@ -300,4 +313,16 @@ private:
         }        
         return low;
     }
+    
+    //рекурсивная функция превращения массива в кучу
+    static void heapify(T* data, size_t root, size_t size) {
+        size_t max = root;
+        size_t left = 2 * root + 1;
+        size_t right = 2 * root + 2;
+        if (left < size && data[left] > data[max]) max = left;
+        if (right < size && data[right] > data[max]) max = right;
+        if (max == root) return;
+        swap_idx(data, root, max);
+        heapify(data, max, size);
+    };
 };
