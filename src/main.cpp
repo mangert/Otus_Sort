@@ -12,7 +12,7 @@ int main() {
 	std::string folders[] = { "0.random", "1.digits", "2.sorted", "3.revers" };
 
 	// Проходим по алгоритмам всем алгоритмам
-	/*for (size_t counter = 0; counter != test_cases_32.size(); ++counter) {
+	for (size_t counter = 0; counter != test_cases_32.size(); ++counter) {
 		std::cout << "\n\n=========================================\n";
 		std::cout << "ALGORITHM: " << test_cases_32[counter].name << "\n";
 		std::cout << "=========================================\n";
@@ -29,7 +29,7 @@ int main() {
 				test.run_all(test_cases_32[counter].max_size);
 			}
 		}
-	}*/
+	}
 
 	//Отдельная проверка записи отсортированного массива в файл после тестирования
 	//будем проверять для алгоритма последовательности Седжвика всех видов данных
