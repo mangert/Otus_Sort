@@ -2,6 +2,7 @@
 #include <concepts>
 #include <functional>
 #include <string>
+#include "generator.cpp"
 
 template<typename T>
 requires std::totally_ordered<T> //принимаем только типы, у которых есть оператор < (для простоты - чтобы компаратор не передавать)
@@ -173,8 +174,9 @@ public:
     };
 
     // ---------- Heap sort -----------------    
-    static void heap_sort(T* data, size_t size) {
-
+    static void heap_sort(T* data, size_t size) {        
+        if (size < 2) return;
+        
         //1. построение первоначальной кучи
         for(size_t root = size / 2; root > 0;) {
             heapify(data, --root, size);
@@ -185,7 +187,8 @@ public:
             swap_idx(data, 0, --i);
             heapify(data, 0, i);
         };        
-    };    
+    };
+    
     
 private:    
     //================= Константы для версий сортировок Шелла ============//

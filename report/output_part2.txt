@@ -1,0 +1,216 @@
+
+
+=========================================
+ALGORITHM: selection
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 1 ms
+Test 4: PASS | Size: 10000 | Time: 121 ms
+Test 5: PASS | Size: 100000 | Time: 12700 ms
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 1 ms
+Test 4: PASS | Size: 10000 | Time: 136 ms
+Test 5: PASS | Size: 100000 | Time: 13235 ms
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 1 ms
+Test 4: PASS | Size: 10000 | Time: 123 ms
+Test 5: PASS | Size: 100000 | Time: 12382 ms
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 1 ms
+Test 4: PASS | Size: 10000 | Time: 125 ms
+Test 5: PASS | Size: 100000 | Time: 12340 ms
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+
+=========================================
+ALGORITHM: heap sort
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 36 ms
+Test 6: PASS | Size: 1000000 | Time: 461 ms
+Test 7: PASS | Size: 10000000 | Time: 6992 ms
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 28 ms
+Test 6: PASS | Size: 1000000 | Time: 313 ms
+Test 7: PASS | Size: 10000000 | Time: 3658 ms
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 29 ms
+Test 6: PASS | Size: 1000000 | Time: 345 ms
+Test 7: PASS | Size: 10000000 | Time: 3961 ms
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 27 ms
+Test 6: PASS | Size: 1000000 | Time: 323 ms
+Test 7: PASS | Size: 10000000 | Time: 3728 ms
+========== End testing ==========
+
+
+=========================================
+ALGORITHM: heap sort
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.0.sorted
+Test 1: PASS | Size: 10 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.1.sorted
+Test 2: PASS | Size: 100 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.2.sorted
+Test 3: PASS | Size: 1000 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.3.sorted
+Test 4: PASS | Size: 10000 | Time: 2 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.4.sorted
+Test 5: PASS | Size: 100000 | Time: 36 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.5.sorted
+Test 6: PASS | Size: 1000000 | Time: 475 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.6.sorted
+Test 7: PASS | Size: 10000000 | Time: 7972 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/0.random/test.7.sorted
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.0.sorted
+Test 1: PASS | Size: 10 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.1.sorted
+Test 2: PASS | Size: 100 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.2.sorted
+Test 3: PASS | Size: 1000 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.3.sorted
+Test 4: PASS | Size: 10000 | Time: 2 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.4.sorted
+Test 5: PASS | Size: 100000 | Time: 28 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.5.sorted
+Test 6: PASS | Size: 1000000 | Time: 322 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.6.sorted
+Test 7: PASS | Size: 10000000 | Time: 3624 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/1.digits/test.7.sorted
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.0.sorted
+Test 1: PASS | Size: 10 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.1.sorted
+Test 2: PASS | Size: 100 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.2.sorted
+Test 3: PASS | Size: 1000 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.3.sorted
+Test 4: PASS | Size: 10000 | Time: 2 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.4.sorted
+Test 5: PASS | Size: 100000 | Time: 29 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.5.sorted
+Test 6: PASS | Size: 1000000 | Time: 349 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.6.sorted
+Test 7: PASS | Size: 10000000 | Time: 4234 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/2.sorted/test.7.sorted
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.0.sorted
+Test 1: PASS | Size: 10 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.1.sorted
+Test 2: PASS | Size: 100 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.2.sorted
+Test 3: PASS | Size: 1000 | Time: 0 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.3.sorted
+Test 4: PASS | Size: 10000 | Time: 2 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.4.sorted
+Test 5: PASS | Size: 100000 | Time: 27 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.5.sorted
+Test 6: PASS | Size: 1000000 | Time: 350 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.6.sorted
+Test 7: PASS | Size: 10000000 | Time: 3737 ms
+  Result saved to: D:/Otus_Algo/Sorts/out/build/x64-debug/Tests/3.revers/test.7.sorted
+========== End testing ==========
+
+D:\Otus_Algo\Sorts\out\build\x64-debug\Sorts.exe (process 3212) exited with code 0 (0x0).
+Press any key to close this window . . .

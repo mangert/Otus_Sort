@@ -19,7 +19,7 @@ struct TestCase32 {
 inline std::vector<TestCase32> get_all_tests_uint32() {
 	return {
 		// Медленные алгоритмы - маленькие лимиты
-		{Sorter<uint32_t>::bubble_sort, "bubble", 100000},
+		/*{Sorter<uint32_t>::bubble_sort, "bubble", 100000},
 		{Sorter<uint32_t>::bubble_sort_opt, "bubble_opt", 200000},
 		{Sorter<uint32_t>::insertion_sort, "insertion", 500000},
 		{Sorter<uint32_t>::insertion_sort_shift, "insertion_shift", 500000},
@@ -32,7 +32,11 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 		{Sorter<uint32_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
 		{Sorter<uint32_t>::shell_sort_hibbard_arr, "shell_hibbard_arr", 0},
 		{Sorter<uint32_t>::shell_sort_hibbard_func, "shell_hibbard_func", 0},
-		{Sorter<uint32_t>::shell_sort_sedgewick, "shell_sedgewick", 0},
+		{Sorter<uint32_t>::shell_sort_sedgewick, "shell_sedgewick", 0},*/
+
+		//алгоритмы второго ДЗ
+		{Sorter<uint32_t>::selection_sort, "selection", 500000},
+		{Sorter<uint32_t>::heap_sort, "heap sort", 0},
 	};
 }
 
@@ -51,7 +55,7 @@ struct TestCase8 {
 inline std::vector<TestCase8> get_all_tests_uint8() {
 	return {
 		// Для uint8_t можно больше - меньше памяти
-		{Sorter<uint8_t>::bubble_sort, "bubble", 200000},
+		/*{Sorter<uint8_t>::bubble_sort, "bubble", 200000},
 		{Sorter<uint8_t>::bubble_sort_opt, "bubble_opt", 500000},
 		{Sorter<uint8_t>::insertion_sort, "insertion", 500000},
 		{Sorter<uint8_t>::insertion_sort_shift, "insertion_shift", 500000},
@@ -64,6 +68,10 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 		{Sorter<uint8_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
 		{Sorter<uint8_t>::shell_sort_hibbard_arr, "shell_hibbard_arr", 0},
 		{Sorter<uint8_t>::shell_sort_hibbard_func, "shell_hibbard_func", 0},
-		{Sorter<uint8_t>::shell_sort_sedgewick, "shell_sedgewick", 0},
+		{Sorter<uint8_t>::shell_sort_sedgewick, "shell_sedgewick", 0},*/
+
+		//алгоритмы второго ДЗ
+		{Sorter<uint8_t>::selection_sort, "selection", 500000},
+		{Sorter<uint8_t>::heap_sort, "heap sort", 0},
 	};
 }
