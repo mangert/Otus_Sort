@@ -188,7 +188,11 @@ public:
             heapify(data, 0, i);
         };        
     };
-    
+
+    // ---------- Quick sort -----------------
+    static void quick_sort(T* data, size_t size) {        
+        _quick_sort(data, 0, static_cast<int64_t>(size - 1));                
+    };    
     
 private:    
     //================= Константы для версий сортировок Шелла ============//
@@ -328,4 +332,27 @@ private:
         swap_idx(data, root, max);
         heapify(data, max, size);
     };
+
+    //служебные функции для quick sort
+    //функция разделения массива
+    static int64_t partition(T* data, int64_t left, int64_t right) {
+        T pivot = data[right];
+        int64_t m = left - 1;
+
+        for (int64_t j = left; j <= right; ++j) {
+            if (data[j] <= pivot) {                
+                swap_idx(data, ++m, j);
+            }
+        }        
+        return m;
+    }
+    //внутренняя рекурсивная функция быстрой сортировки
+    static void _quick_sort(T* data, int64_t left, int64_t right) {
+        if (left < right) {
+            int64_t mid = partition(data, left, right);
+            _quick_sort(data, left, mid - 1);
+            _quick_sort(data, mid + 1, right);
+        }
+    }
+
 };
