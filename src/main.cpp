@@ -5,7 +5,7 @@
 #include "generator.cpp"
 
 int main() {
-	/*
+	
 	// Получаем все тестовые случаи
 	auto test_cases_32 = get_all_tests_uint32();
 	auto test_cases_8 = get_all_tests_uint8();
@@ -31,7 +31,7 @@ int main() {
 			}
 		}
 	}
-
+	/*
 	//Отдельная проверка записи отсортированного массива в файл после тестирования
 	//будем проверять для алгоритма пирамидальной сортировки для всех видов данных
 	std::cout << "Sample test with files output\n";
@@ -49,13 +49,13 @@ int main() {
 			test.run_all(test_cases_32[1].max_size, true);
 		}
 	}
-	*/
+	
 	int arr[10];
 	data_generator::fill_random<int>(arr, 10, 20);
 	data_generator::print_array(arr, 10);
 	std::cout << std::endl;
 
-	Sorter<int>::quick_sort(arr, 10);
-	data_generator::print_array(arr, 10);
+	Sorter<int>::quick_sort_optimized(arr, 10);
+	data_generator::print_array(arr, 10);*/
 	return 0; 
 }

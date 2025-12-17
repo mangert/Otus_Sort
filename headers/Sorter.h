@@ -3,6 +3,8 @@
 #include <functional>
 #include <string>
 #include "generator.cpp"
+#include <stack>
+
 
 template<typename T>
 requires std::totally_ordered<T> //принимаем только типы, у которых есть оператор < (для простоты - чтобы компаратор не передавать)
@@ -190,9 +192,73 @@ public:
     };
 
     // ---------- Quick sort -----------------
-    static void quick_sort(T* data, size_t size) {        
-        _quick_sort(data, 0, static_cast<int64_t>(size - 1));                
+    static void quick_sort(T* data, size_t size) {                
+        _quick_sort(data, 0, static_cast<int64_t>(size - 1));        
     };    
+
+    // оптимизированная версия (с выбором pivot)
+    static void quick_sort_optimized(T* data, size_t size) {
+        _quick_sort_optimized(data, 0, static_cast<int64_t>(size - 1));
+    };
+
+    /*static void quick_sort_safe(T* data, size_t size) {
+        if (size < 2) return;
+        int depth_limit = 2 * static_cast<int>(log2(size));
+        _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
+    };*/
+
+    static void quick_sort_safe(T* data, size_t size) {
+        heap_sort_fallback_count = 0;
+        max_recursion_depth = 0;
+
+        if (size < 2) return;
+        int depth_limit = 3 * static_cast<int>(log2(size));
+
+        _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
+
+        // Вывод статистики (только для больших массивов)
+        if (size > 10000) {
+            std::cout << "  [Stats] Heap sort fallbacks: " << heap_sort_fallback_count
+                << ", Max recursion depth: " << max_recursion_depth
+                << " (limit was: " << depth_limit << ")\n";
+        }
+    }
+
+    // итеративная версия
+    static void quick_sort_iterative(T* data, size_t size) {
+        if (size < 2) return;
+
+        std::stack<std::pair<int64_t, int64_t>> stack;
+        stack.push({ 0, static_cast<int64_t>(size) - 1 });
+
+        while (!stack.empty()) {
+            auto [left, right] = stack.top();
+            stack.pop();
+
+            if (left >= right) continue;
+
+            // Простой partition
+            T pivot = data[right];
+            int64_t m = left;
+            for (int64_t j = left; j < right; ++j) {
+                if (data[j] <= pivot) {
+                    swap_idx(data, m, j);
+                    ++m;
+                }
+            }
+            swap_idx(data, m, right);
+
+            // Сначала большая часть
+            if (m - left > right - m) {
+                stack.push({ left, m - 1 });
+                stack.push({ m + 1, right });
+            }
+            else {
+                stack.push({ m + 1, right });
+                stack.push({ left, m - 1 });
+            }
+        }
+    }
     
 private:    
     //================= Константы для версий сортировок Шелла ============//
@@ -346,6 +412,38 @@ private:
         }        
         return m;
     }
+    
+    //служебная функция выбора опорного элемента (для оптимизированной версии quick_sort)
+    static int64_t choose_pivot(T* data, int64_t left, int64_t right) {
+        int64_t mid = left + (right - left) / 2;
+
+        // Сортируем left, mid, right
+        if (data[left] > data[mid]) swap_idx(data, left, mid);
+        if (data[left] > data[right]) swap_idx(data, left, right);
+        if (data[mid] > data[right]) swap_idx(data, mid, right);
+
+        return mid;  // mid теперь медиана
+    }
+
+    //оптимизированная функция разделения для quick_sort (c выбором медианного pivot)
+    static int64_t partition_optimized(T* data, int64_t left, int64_t right) {
+        // Выбираем медиану и ставим её в конец
+        int64_t pivot_idx = choose_pivot(data, left, right);
+        swap_idx(data, pivot_idx, right);
+        T pivot = data[right];
+
+        int64_t m = left;
+        for (int64_t j = left; j < right; ++j) {
+            if (data[j] <= pivot) {
+                swap_idx(data, m, j);
+                ++m;
+            }
+        }
+
+        swap_idx(data, m, right);
+        return m;
+    }
+
     //внутренняя рекурсивная функция быстрой сортировки
     static void _quick_sort(T* data, int64_t left, int64_t right) {
         if (left < right) {
@@ -355,4 +453,60 @@ private:
         }
     }
 
-};
+    //внутренняя рекурсивная функция быстрой сортировки (оптимизированная)
+    static void _quick_sort_optimized(T* data, int64_t left, int64_t right) {
+        if (left < right) {
+            int64_t mid = partition_optimized(data, left, right);
+            _quick_sort_optimized(data, left, mid - 1);
+            _quick_sort_optimized(data, mid + 1, right);
+        }
+    }
+
+    /*static void _quick_sort_safe(T* data, int64_t left, int64_t right, int depth_limit) {
+        
+        if (left < 0 || right < 0 || left >= right) return;
+
+        // Если глубина превышена - heap sort
+        if (depth_limit == 0) {
+            heap_sort(data + left, right - left + 1);
+            return;
+        };        
+        int64_t mid = partition_optimized(data, left, right);
+        _quick_sort_safe(data, left, mid - 1, depth_limit - 1);
+        _quick_sort_safe(data, mid + 1, right, depth_limit - 1);
+    }*/
+
+    inline static size_t heap_sort_fallback_count = 0;
+    inline static size_t max_recursion_depth = 0;
+
+    static void _quick_sort_safe(T* data, int64_t left, int64_t right,
+        int depth_limit, int current_depth = 0) {
+
+        // Следим за глубиной
+        if (current_depth > max_recursion_depth) {
+            max_recursion_depth = current_depth;
+        }
+
+        if (left >= right) return;
+
+        // Fallback на heap sort
+        if (depth_limit == 0) {
+            ++heap_sort_fallback_count;
+            heap_sort(data + left, right - left + 1);
+            return;
+        }
+
+        int64_t mid = partition_optimized(data, left, right);
+
+        // Балансировка рекурсии
+        if (mid - left < right - mid) {
+            _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
+            _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
+        }
+        else {
+            _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
+            _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
+        }
+    }   
+
+ };

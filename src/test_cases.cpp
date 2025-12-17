@@ -32,11 +32,17 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 		{Sorter<uint32_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
 		{Sorter<uint32_t>::shell_sort_hibbard_arr, "shell_hibbard_arr", 0},
 		{Sorter<uint32_t>::shell_sort_hibbard_func, "shell_hibbard_func", 0},
-		{Sorter<uint32_t>::shell_sort_sedgewick, "shell_sedgewick", 0},*/
+		{Sorter<uint32_t>::shell_sort_sedgewick, "shell_sedgewick", 0},
 
 		//алгоритмы второго ДЗ
 		{Sorter<uint32_t>::selection_sort, "selection", 500000},
-		{Sorter<uint32_t>::heap_sort, "heap sort", 0},
+		{Sorter<uint32_t>::heap_sort, "heap sort", 0},*/
+
+		//алгоритмы третьего ДЗ
+		//{Sorter<uint32_t>::quick_sort, "quick_sort", 0},
+		//{Sorter<uint32_t>::quick_sort_optimized, "quick_sort_opt", 0},
+		//{Sorter<uint32_t>::quick_sort_iterative, "quick_sort_iter", 0}
+		{Sorter<uint32_t>::quick_sort_safe, "quick_sort_safe", 0}
 	};
 }
 
@@ -68,10 +74,17 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 		{Sorter<uint8_t>::shell_sort_knuth_func, "shell_knuth_func", 0},
 		{Sorter<uint8_t>::shell_sort_hibbard_arr, "shell_hibbard_arr", 0},
 		{Sorter<uint8_t>::shell_sort_hibbard_func, "shell_hibbard_func", 0},
-		{Sorter<uint8_t>::shell_sort_sedgewick, "shell_sedgewick", 0},*/
+		{Sorter<uint8_t>::shell_sort_sedgewick, "shell_sedgewick", 0},
 
 		//алгоритмы второго ДЗ
 		{Sorter<uint8_t>::selection_sort, "selection", 500000},
-		{Sorter<uint8_t>::heap_sort, "heap sort", 0},
+		{Sorter<uint8_t>::heap_sort, "heap sort", 0}, */
+
+		//алгоритмы третьего ДЗ
+		//{Sorter<uint8_t>::quick_sort, "quick_sort", 0},
+		//{Sorter<uint8_t>::quick_sort_optimized, "quick_sort_opt", 0},
+		//{Sorter<uint8_t>::quick_sort_iterative, "quick_sort_iter", 0}
+		{Sorter<uint8_t>::quick_sort_safe, "quick_sort_safe", 0}
+
 	};
 }
