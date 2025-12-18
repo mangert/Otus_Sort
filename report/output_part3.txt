@@ -1,0 +1,243 @@
+
+=========================================
+ALGORITHM: quick_sort
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 19 ms
+Test 6: PASS | Size: 1000000 | Time: 237 ms
+Test 7: PASS | Size: 10000000 | Time: 2780 ms
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 39 ms
+Test 5: Test 5: SKIPPED (size=100000)
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 1 ms
+Test 4: PASS | Size: 10000 | Time: 3 ms
+Test 5: PASS | Size: 100000 | Time: 87 ms
+Test 6: PASS | Size: 1000000 | Time: 1255 ms
+Test 7: PASS | Size: 10000000 | Time: 16657 ms
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 2 ms
+Test 4: Test 4: SKIPPED (size=10000)
+Test 5: Test 5: SKIPPED (size=100000)
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+
+=========================================
+ALGORITHM: quick_sort_opt
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 19 ms
+Test 6: PASS | Size: 1000000 | Time: 236 ms
+Test 7: PASS | Size: 10000000 | Time: 2746 ms
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 37 ms
+Test 5: Test 5: SKIPPED (size=100000)
+Test 6: Test 6: SKIPPED (size=1000000)
+Test 7: Test 7: SKIPPED (size=10000000)
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 22 ms
+Test 6: PASS | Size: 1000000 | Time: 268 ms
+Test 7: PASS | Size: 10000000 | Time: 2687 ms
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 17 ms
+Test 6: PASS | Size: 1000000 | Time: 213 ms
+Test 7: PASS | Size: 10000000 | Time: 2521 ms
+========== End testing ==========
+
+
+
+=========================================
+ALGORITHM: quick_sort_safe
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 19 ms
+Test 6: PASS | Size: 1000000 | Time: 238 ms
+Test 7: PASS | Size: 10000000 | Time: 2941 ms
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 3 ms
+Test 5: PASS | Size: 100000 | Time: 36 ms
+Test 6: PASS | Size: 1000000 | Time: 431 ms
+Test 7: PASS | Size: 10000000 | Time: 5262 ms
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 26 ms
+Test 6: PASS | Size: 1000000 | Time: 332 ms
+Test 7: PASS | Size: 10000000 | Time: 3215 ms
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 17 ms
+Test 6: PASS | Size: 1000000 | Time: 216 ms
+Test 7: PASS | Size: 10000000 | Time: 2622 ms
+========== End testing ==========
+
+
+
+=========================================
+ALGORITHM: merge_sort
+=========================================
+
+--- Data type: 0.random ---
+
+========== Testing: 0.random ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 27 ms
+Test 6: PASS | Size: 1000000 | Time: 312 ms
+Test 7: PASS | Size: 10000000 | Time: 3465 ms
+========== End testing ==========
+
+
+--- Data type: 1.digits ---
+
+========== Testing: 1.digits ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 2 ms
+Test 5: PASS | Size: 100000 | Time: 22 ms
+Test 6: PASS | Size: 1000000 | Time: 240 ms
+Test 7: PASS | Size: 10000000 | Time: 2556 ms
+========== End testing ==========
+
+
+--- Data type: 2.sorted ---
+
+========== Testing: 2.sorted ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 19 ms
+Test 6: PASS | Size: 1000000 | Time: 207 ms
+Test 7: PASS | Size: 10000000 | Time: 2300 ms
+========== End testing ==========
+
+
+--- Data type: 3.revers ---
+
+========== Testing: 3.revers ==========
+Test 0: PASS | Size: 1 | Time: 0 ms
+Test 1: PASS | Size: 10 | Time: 0 ms
+Test 2: PASS | Size: 100 | Time: 0 ms
+Test 3: PASS | Size: 1000 | Time: 0 ms
+Test 4: PASS | Size: 10000 | Time: 1 ms
+Test 5: PASS | Size: 100000 | Time: 21 ms
+Test 6: PASS | Size: 1000000 | Time: 208 ms
+Test 7: PASS | Size: 10000000 | Time: 2451 ms
+========== End testing ==========
+

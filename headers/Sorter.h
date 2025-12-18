@@ -205,23 +205,6 @@ public:
         int depth_limit = 3 * static_cast<int>(log2(size)); //максимально допустимая глубина рекурсии - подбором
         _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
     };
-
-    /*static void quick_sort_safe(T* data, size_t size) {
-        heap_sort_fallback_count = 0;
-        max_recursion_depth = 0;
-
-        if (size < 2) return;
-        int depth_limit = 3 * static_cast<int>(log2(size));
-
-        _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
-
-        // Вывод статистики (только для больших массивов)
-        if (size > 10000) {
-            std::cout << "  [Stats] Heap sort fallbacks: " << heap_sort_fallback_count
-                << ", Max recursion depth: " << max_recursion_depth
-                << " (limit was: " << depth_limit << ")\n";
-        }
-    }*/
     
     // ---------- Merge sort -----------------
     static void merge_sort(T* data, size_t size) {
@@ -456,40 +439,7 @@ private:
         _quick_sort_safe(data, left, mid - 1, depth_limit - 1);
         _quick_sort_safe(data, mid + 1, right, depth_limit - 1);
     }
-
-    //inline static size_t heap_sort_fallback_count = 0;
-    //inline static size_t max_recursion_depth = 0;
-
-    //static void _quick_sort_safe(T* data, int64_t left, int64_t right,
-    //    int depth_limit, int current_depth = 0) {
-
-    //    // Следим за глубиной
-    //    if (current_depth > max_recursion_depth) {
-    //        max_recursion_depth = current_depth;
-    //    }
-
-    //    if (left >= right) return;
-
-    //    // Fallback на heap sort
-    //    if (depth_limit == 0) {
-    //        ++heap_sort_fallback_count;
-    //        heap_sort(data + left, right - left + 1);
-    //        return;
-    //    }
-
-    //    int64_t mid = partition_optimized(data, left, right);
-
-    //    // Балансировка рекурсии
-    //    if (mid - left < right - mid) {
-    //        _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
-    //        _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
-    //    }
-    //    else {
-    //        _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
-    //        _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
-    //    }
-    //}
-
+    
     //служебные функции для merge sort
     //внутренняя рекурсивная функция
     static void _merge_sort(T* data, T* temp, size_t left, size_t right) {
