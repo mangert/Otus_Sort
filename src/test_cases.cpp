@@ -39,10 +39,10 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 		{Sorter<uint32_t>::heap_sort, "heap sort", 0},*/
 
 		//алгоритмы третьего ДЗ
-		//{Sorter<uint32_t>::quick_sort, "quick_sort", 0},
-		//{Sorter<uint32_t>::quick_sort_optimized, "quick_sort_opt", 0},
-		//{Sorter<uint32_t>::quick_sort_iterative, "quick_sort_iter", 0}
-		{Sorter<uint32_t>::quick_sort_safe, "quick_sort_safe", 0}
+		{Sorter<uint32_t>::quick_sort, "quick_sort", 0},
+		{Sorter<uint32_t>::quick_sort_optimized, "quick_sort_opt", 0},		
+		{Sorter<uint32_t>::quick_sort_safe, "quick_sort_safe", 0},
+		{Sorter<uint32_t>::merge_sort, "merge_sort", 0}
 	};
 }
 
@@ -81,10 +81,10 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 		{Sorter<uint8_t>::heap_sort, "heap sort", 0}, */
 
 		//алгоритмы третьего ДЗ
-		//{Sorter<uint8_t>::quick_sort, "quick_sort", 0},
-		//{Sorter<uint8_t>::quick_sort_optimized, "quick_sort_opt", 0},
-		//{Sorter<uint8_t>::quick_sort_iterative, "quick_sort_iter", 0}
-		{Sorter<uint8_t>::quick_sort_safe, "quick_sort_safe", 0}
+		{Sorter<uint8_t>::quick_sort, "quick_sort", 99999},
+		{Sorter<uint8_t>::quick_sort_optimized, "quick_sort_opt", 99999},		
+		{Sorter<uint8_t>::quick_sort_safe, "quick_sort_safe", 0},
+		{Sorter<uint8_t>::merge_sort, "merge_sort", 0}
 
 	};
 }

@@ -2,9 +2,7 @@
 #include <concepts>
 #include <functional>
 #include <string>
-#include "generator.cpp"
-#include <stack>
-
+#include <vector>
 
 template<typename T>
 requires std::totally_ordered<T> //принимаем только типы, у которых есть оператор < (для простоты - чтобы компаратор не передавать)
@@ -201,13 +199,14 @@ public:
         _quick_sort_optimized(data, 0, static_cast<int64_t>(size - 1));
     };
 
-    /*static void quick_sort_safe(T* data, size_t size) {
-        if (size < 2) return;
-        int depth_limit = 2 * static_cast<int>(log2(size));
-        _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
-    };*/
-
+    // версия с защитой от переполнения стека
     static void quick_sort_safe(T* data, size_t size) {
+        if (size < 2) return;
+        int depth_limit = 3 * static_cast<int>(log2(size)); //максимально допустимая глубина рекурсии - подбором
+        _quick_sort_safe(data, 0, static_cast<int64_t>(size) - 1, depth_limit);
+    };
+
+    /*static void quick_sort_safe(T* data, size_t size) {
         heap_sort_fallback_count = 0;
         max_recursion_depth = 0;
 
@@ -222,43 +221,24 @@ public:
                 << ", Max recursion depth: " << max_recursion_depth
                 << " (limit was: " << depth_limit << ")\n";
         }
-    }
+    }*/
+    
+    // ---------- Merge sort -----------------
+    static void merge_sort(T* data, size_t size) {
+        
+        try {
+            // Единый буфер (RAII гарантирует освобождение)
+            std::vector<T> temp(size);
 
-    // итеративная версия
-    static void quick_sort_iterative(T* data, size_t size) {
-        if (size < 2) return;
+            // Рекурсивная сортировка
+            _merge_sort(data, temp.data(), 0, size - 1);
 
-        std::stack<std::pair<int64_t, int64_t>> stack;
-        stack.push({ 0, static_cast<int64_t>(size) - 1 });
-
-        while (!stack.empty()) {
-            auto [left, right] = stack.top();
-            stack.pop();
-
-            if (left >= right) continue;
-
-            // Простой partition
-            T pivot = data[right];
-            int64_t m = left;
-            for (int64_t j = left; j < right; ++j) {
-                if (data[j] <= pivot) {
-                    swap_idx(data, m, j);
-                    ++m;
-                }
-            }
-            swap_idx(data, m, right);
-
-            // Сначала большая часть
-            if (m - left > right - m) {
-                stack.push({ left, m - 1 });
-                stack.push({ m + 1, right });
-            }
-            else {
-                stack.push({ m + 1, right });
-                stack.push({ left, m - 1 });
-            }
         }
-    }
+        catch (const std::bad_alloc& e) {
+            // Не хватило памяти для временного массива
+            throw std::runtime_error("Merge sort: not enough memory for temporary array");
+        }
+    };    
     
 private:    
     //================= Константы для версий сортировок Шелла ============//
@@ -444,7 +424,7 @@ private:
         return m;
     }
 
-    //внутренняя рекурсивная функция быстрой сортировки
+    //внутренняя рекурсивная функция быстрой сортировки (обычная)
     static void _quick_sort(T* data, int64_t left, int64_t right) {
         if (left < right) {
             int64_t mid = partition(data, left, right);
@@ -462,7 +442,8 @@ private:
         }
     }
 
-    /*static void _quick_sort_safe(T* data, int64_t left, int64_t right, int depth_limit) {
+    //внутренняя рекурсивная функция быстрой сортировки (с защитой от переполненения стека)
+    static void _quick_sort_safe(T* data, int64_t left, int64_t right, int depth_limit) {
         
         if (left < 0 || right < 0 || left >= right) return;
 
@@ -474,39 +455,88 @@ private:
         int64_t mid = partition_optimized(data, left, right);
         _quick_sort_safe(data, left, mid - 1, depth_limit - 1);
         _quick_sort_safe(data, mid + 1, right, depth_limit - 1);
-    }*/
+    }
 
-    inline static size_t heap_sort_fallback_count = 0;
-    inline static size_t max_recursion_depth = 0;
+    //inline static size_t heap_sort_fallback_count = 0;
+    //inline static size_t max_recursion_depth = 0;
 
-    static void _quick_sort_safe(T* data, int64_t left, int64_t right,
-        int depth_limit, int current_depth = 0) {
+    //static void _quick_sort_safe(T* data, int64_t left, int64_t right,
+    //    int depth_limit, int current_depth = 0) {
 
-        // Следим за глубиной
-        if (current_depth > max_recursion_depth) {
-            max_recursion_depth = current_depth;
-        }
+    //    // Следим за глубиной
+    //    if (current_depth > max_recursion_depth) {
+    //        max_recursion_depth = current_depth;
+    //    }
 
+    //    if (left >= right) return;
+
+    //    // Fallback на heap sort
+    //    if (depth_limit == 0) {
+    //        ++heap_sort_fallback_count;
+    //        heap_sort(data + left, right - left + 1);
+    //        return;
+    //    }
+
+    //    int64_t mid = partition_optimized(data, left, right);
+
+    //    // Балансировка рекурсии
+    //    if (mid - left < right - mid) {
+    //        _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
+    //        _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
+    //    }
+    //    else {
+    //        _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
+    //        _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
+    //    }
+    //}
+
+    //служебные функции для merge sort
+    //внутренняя рекурсивная функция
+    static void _merge_sort(T* data, T* temp, size_t left, size_t right) {
+
+        // Базовый случай
         if (left >= right) return;
 
-        // Fallback на heap sort
-        if (depth_limit == 0) {
-            ++heap_sort_fallback_count;
-            heap_sort(data + left, right - left + 1);
-            return;
+        // Вычисляем середину (без переполнения)
+        size_t mid = left + (right - left) / 2;
+
+        // Рекурсивно сортируем половины
+        _merge_sort(data, temp, left, mid);
+        _merge_sort(data, temp, mid + 1, right);
+
+        // Сливаем отсортированные половины
+        merge(data, temp, left, mid, right);
+    }
+    
+    //функция объединения отсортированных массивов
+    static void merge(T* data, T* temp, size_t left, size_t mid, size_t right) {
+
+        // 1. Размеры частей
+        const size_t left_size = mid - left + 1;
+        const size_t right_size = right - mid;
+
+        // 2. Копируем во временный массив
+        std::copy_n(data + left, left_size, temp + left);
+        std::copy_n(data + mid + 1, right_size, temp + mid + 1);
+
+
+        size_t i = left;      // Левая часть во временном массиве
+        size_t j = mid + 1;   // Правая часть во временном массиве
+        size_t k = left;      // Текущая позиция в оригинальном массиве
+
+        // Слияние с сохранением стабильности
+        while (i <= mid && j <= right) {
+            if (temp[i] <= temp[j]) {
+                data[k++] = temp[i++];
+            }
+            else {
+                data[k++] = temp[j++];
+            }
         }
 
-        int64_t mid = partition_optimized(data, left, right);
-
-        // Балансировка рекурсии
-        if (mid - left < right - mid) {
-            _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
-            _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
-        }
-        else {
-            _quick_sort_safe(data, mid + 1, right, depth_limit - 1, current_depth + 1);
-            _quick_sort_safe(data, left, mid - 1, depth_limit - 1, current_depth + 1);
-        }
-    }   
+        // Докопируем остатки
+        while (i <= mid) data[k++] = temp[i++];
+        while (j <= right) data[k++] = temp[j++];
+    }
 
  };

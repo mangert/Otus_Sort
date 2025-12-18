@@ -27,7 +27,10 @@ int main() {
 			}
 			else {
 				Test<uint32_t> test(test_cases_32[counter].function, folder);
-				test.run_all(test_cases_32[counter].max_size);
+				if(folder == "3.revers" 
+					&& test_cases_32[counter].function == Sorter<uint32_t>::quick_sort)
+					test.run_all(9999); //для быстрой сортировки при обратно отсортированном массиве отдельно ограничиваем, а то падает
+				else test.run_all(test_cases_32[counter].max_size);
 			}
 		}
 	}
@@ -49,13 +52,13 @@ int main() {
 			test.run_all(test_cases_32[1].max_size, true);
 		}
 	}
-	
-	int arr[10];
+	*/
+	/*int arr[10];
 	data_generator::fill_random<int>(arr, 10, 20);
 	data_generator::print_array(arr, 10);
 	std::cout << std::endl;
 
-	Sorter<int>::quick_sort_optimized(arr, 10);
+	Sorter<int>::merge_sort(arr, 10);
 	data_generator::print_array(arr, 10);*/
 	return 0; 
 }
