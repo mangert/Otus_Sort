@@ -224,20 +224,7 @@ private:
     }
 
     //функция записи отсортированного массива в файл
-    void save_result(const std::string& filename, const T* sorted_data, size_t size) {
-        // Для очень больших массивов ограничиваем вывод
-        /*if (size > 100000) {
-            std::ofstream file(filename);
-            if (!file.is_open()) {
-                std::cerr << "  WARNING: Cannot open result file: " << filename << "\n";
-                return;
-            }
-
-            file << size << "\n";
-            file << "[Result saved for large array of size " << size << "]";
-            file.close();
-            return;
-        }*/
+    void save_result(const std::string& filename, const T* sorted_data, size_t size) {        
 
         std::ofstream file(filename);
         if (!file.is_open()) {

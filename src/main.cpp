@@ -3,11 +3,12 @@
 #include "Test.h"
 #include "test_cases.cpp"
 #include "generator.cpp"
+#include "ExternalSorter.cpp"
 
 int main() {
 	
 	// Получаем все тестовые случаи
-	auto test_cases_32 = get_all_tests_uint32();
+	/*auto test_cases_32 = get_all_tests_uint32();
 	auto test_cases_8 = get_all_tests_uint8();
 
 	std::string folders[] = { "0.random", "1.digits", "2.sorted", "3.revers" };
@@ -60,5 +61,11 @@ int main() {
 
 	Sorter<int>::merge_sort(arr, 10);
 	data_generator::print_array(arr, 10);*/
+	
+	std::string file = "My_file.txt";
+
+	ExternalSorter::generate_file(file, 20, 100);
+
+	
 	return 0; 
 }
