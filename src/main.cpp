@@ -65,7 +65,8 @@ int main() {
 	std::string file = "My_file.txt";
 
 	ExternalSorter::generate_file(file, 20, 100);
-
+	ExternalSorter::external_sort_method1(file, "My_file2.txt", 100);
+	
 	
 	return 0; 
 }
