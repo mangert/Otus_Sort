@@ -1,5 +1,4 @@
 ﻿#pragma once
-#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -91,10 +90,8 @@ private:
 
         if (!fs::create_directory(temp_dir)) {
             throw std::runtime_error("Cannot create temp directory: " + temp_dir);
-        }
-
-        std::cout << "Created temp directory: " << fs::absolute(temp_dir) << "\n";
-    }
+        }      
+    } 
 
     // Распределение чисел по bucket-файлам
     static void distribute_to_buckets(const std::string& input_file,
@@ -104,9 +101,7 @@ private:
         std::ifstream input(input_file);
         if (!input.is_open()) {
             throw std::runtime_error("Cannot open input file: " + input_file);
-        }
-
-        std::cout << "Distributing numbers to " << T << " buckets...\n";
+        }        
 
         // Буферы для часто встречающихся ключей (оптимизация)
         const size_t BUFFER_LIMIT = 10000;  // Число строк в буфере
@@ -148,11 +143,10 @@ private:
             if (!buffer.empty()) {
                 append_to_bucket_file(temp_dir, key, buffer);
             }
-        }
-
-        std::cout << "  Processed " << total_numbers << " numbers\n";
+        }        
         input.close();
     }
+    
     // Добавление данных в bucket-файл
     static void append_to_bucket_file(const std::string& temp_dir,
         size_t bucket_key,
@@ -186,9 +180,7 @@ private:
         std::ofstream output(output_file);
         if (!output.is_open()) {
             throw std::runtime_error("Cannot open output file: " + output_file);
-        }
-
-        std::cout << "Merging " << T << " buckets to output...\n";
+        }        
 
         size_t total_written = 0;
         namespace fs = std::filesystem;
@@ -220,8 +212,7 @@ private:
             // Если файла нет (нет чисел с таким key) - просто пропускаем
         }
 
-        output.close();
-        std::cout << "  Written " << total_written << " numbers to output\n";
+        output.close();        
     }
 
     // Очистка временной директории
@@ -229,8 +220,7 @@ private:
         namespace fs = std::filesystem;
         if (fs::exists(temp_dir)) {
             try {
-                fs::remove_all(temp_dir);
-                std::cout << "Cleaned up temp directory: " << temp_dir << "\n";
+                fs::remove_all(temp_dir);                
             }
             catch (const fs::filesystem_error& e) {
                 std::cerr << "Warning: Failed to cleanup temp directory: "

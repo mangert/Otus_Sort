@@ -4,6 +4,7 @@
 #include "test_cases.cpp"
 #include "generator.cpp"
 #include "ExternalSorter.cpp"
+#include "ExternalTest.cpp"
 
 int main() {
 	
@@ -64,9 +65,12 @@ int main() {
 	
 	std::string file = "My_file.txt";
 
-	ExternalSorter::generate_file(file, 20, 100);
-	ExternalSorter::external_sort_method1(file, "My_file2.txt", 100);
-	
+	/*ExternalSorter::generate_file(file, 20, 100);
+	ExternalSorter::external_sort_method1(file, "My_file2.txt", 100);*/
+
+	ExternalTest test;
+
+	test.run_all_tests(ExternalSorter::external_sort_method1, 999999, "ES1");
 	
 	return 0; 
 }
