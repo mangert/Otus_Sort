@@ -63,14 +63,18 @@ int main() {
 	Sorter<int>::merge_sort(arr, 10);
 	data_generator::print_array(arr, 10);*/
 	
-	std::string file = "My_file.txt";
+	//std::string file = "My_file.txt";
 
 	/*ExternalSorter::generate_file(file, 20, 100);
 	ExternalSorter::external_sort_method1(file, "My_file2.txt", 100);*/
 
-	ExternalTest test;
+	//ExternalTest test;
 
-	test.run_all_tests(ExternalSorter::external_sort_method1, 999999, "ES1");
+	//test.run_all_tests(ExternalSorter::external_sort_method1, 999999, "ES1");
+	std::string file = "My_file.txt";
+	//ExternalSorter::generate_file(file, 10, 100);
+
+	ExternalSorter::external_sort_method2(file, "My_file2.txt");
 	
 	return 0; 
 }

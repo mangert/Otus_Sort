@@ -144,7 +144,7 @@ private:
         std::cout << "File " << filename << " is correctly sorted ("
             << line_num << " numbers)\n";
         return true;
-    }
+    };
 
 private:
     std::vector<size_t> cases_N;
