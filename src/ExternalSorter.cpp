@@ -9,6 +9,8 @@
 #include <sstream>
 #include <stdexcept>
 #include <exception>
+#include <functional>
+#include "Sorter.h"
 
 
 class ExternalSorter {
@@ -47,88 +49,11 @@ public:
         }
     }
           
-    // ES2: Balanced two-way merge sort
+    // ES2: (Balanced two-way merge sort)
     static void external_sort_method2(const std::string& input_file,
         const std::string& output_file, const std::string& temp_dir = "temp_merge") {
 
-        // Имена временных файлов
-        create_temp_directory(temp_dir);
-        const std::string fileA = temp_dir + "/temp_merge_A.txt";
-        const std::string fileB = temp_dir + "/temp_merge_B.txt";
-        const std::string fileC = temp_dir + "/temp_merge_C.txt";
-        const std::string fileD = temp_dir + "/temp_merge_D.txt";
-
-        try {
-            // 1. Фаза распределения (distribution phase)
-            std::cout << "=== Phase 1: Distribution ===\n";
-            distribute_alternately(input_file, fileA, fileB);
-
-            size_t run_length = 1;
-            size_t total_records = count_records(input_file);
-            size_t phase = 1;
-            size_t countA = count_records(fileA);
-            size_t countB = count_records(fileB);
-            size_t total = countA + countB;
-            std::cout << "  A: " << countA << " records, B: " << countB
-                << " records, Total: " << total << "\n";
-
-
-            std::string source1 = fileA;
-            std::string source2 = fileB;
-            std::string dest1 = fileC;
-            std::string dest2 = fileD;
-
-            // 2. Фаза слияния (merge phase)
-            while (run_length < total_records) {
-                std::cout << "Phase " << ++phase << ": Merging runs of length "
-                    << run_length << "...\n";
-
-                // Сливаем серии
-                merge_runs_balanced(source1, source2, dest1, dest2, run_length);
-
-                size_t countD1 = count_records(dest1);
-                size_t countD2 = count_records(dest2);
-                std::cout << "  " << dest1 << ": " << countD1 << " records\n";
-                std::cout << "  " << dest2 << ": " << countD2 << " records\n";
-                std::cout << "  Total after merge: " << (countD1 + countD2)
-                    << " (should be " << total << ")\n";
-
-                if (countD1 + countD2 != total) {
-                    std::cerr << "ERROR: Lost " << (total - countD1 - countD2)
-                        << " records!\n";
-                    // Можно вывести содержимое файлов для отладки
-                    debug_file_contents(dest1, "dest1");
-                    debug_file_contents(dest2, "dest2");
-                }                
-
-                // Удваиваем длину серии для следующей итерации
-                run_length *= 2;
-
-                // Меняем роли файлов
-                std::swap(source1, dest1);
-                std::swap(source2, dest2);
-            }
-
-            // 3. Определяем, в каком файле результат
-            std::string result_file = (count_records(source1) > 0) ? source1 : source2;
-
-            // 4. Копируем результат в выходной файл
-            if (result_file != output_file) {
-                std::filesystem::copy(result_file, output_file,
-                    std::filesystem::copy_options::overwrite_existing);
-            }
-
-            // 5. Очистка
-            cleanup_temp_directory(temp_dir);
-
-            std::cout << "Sorted " << total_records << " records in "
-                << (phase - 1) << " merge phases\n";
-
-        }
-        catch (const std::exception& e) {
-            //cleanup_files({ fileA, fileB, fileC, fileD }, "");
-            throw;
-        }
+        _external_sort_generic(input_file, output_file, temp_dir, distribute_alternately, 1);
     }
     
     //функция записи случайных чисел в файл
@@ -204,8 +129,7 @@ private:
     
     // Распределение чисел по bucket-файлам
     static void distribute_to_buckets(const std::string& input_file,
-        const std::string& temp_dir,
-        size_t T) {
+        const std::string& temp_dir, size_t T) {
 
         std::ifstream input(input_file);
         if (!input.is_open()) {
@@ -252,8 +176,7 @@ private:
     
     // Добавление данных в bucket-файл
     static void append_to_bucket_file(const std::string& temp_dir,
-        size_t bucket_key,
-        const std::string& data) {
+        size_t bucket_key, const std::string& data) {
 
         std::string filename = get_bucket_filename(temp_dir, bucket_key);
         std::ofstream file(filename, std::ios::app);
@@ -277,8 +200,7 @@ private:
 
     // Объединение bucket-файлов в выходной файл
     static void merge_buckets(const std::string& output_file,
-        const std::string& temp_dir,
-        size_t T) {
+        const std::string& temp_dir, size_t T) {
 
         std::ofstream output(output_file);
         if (!output.is_open()) {
@@ -318,11 +240,95 @@ private:
         output.close();        
     }
     
-    //-------- Служебные функции для сортировки ES2 -------------//
+    // --------внутренняя функция сортировки ES2, ES3 ------------ -//
+    static void _external_sort_generic(const std::string& input_file,
+        const std::string& output_file, const std::string& temp_dir,
+        std::function<void(std::string, std::string, std::string)> distributor, size_t run_length) {
+
+        // Имена временных файлов
+        create_temp_directory(temp_dir);
+        const std::string fileA = temp_dir + "/temp_merge_A.txt";
+        const std::string fileB = temp_dir + "/temp_merge_B.txt";
+        const std::string fileC = temp_dir + "/temp_merge_C.txt";
+        const std::string fileD = temp_dir + "/temp_merge_D.txt";
+
+        try {
+            // 1. Фаза распределения (distribution phase)
+            std::cout << "=== Phase 1: Distribution ===\n";            
+            distributor(input_file, fileA, fileB);
+            
+            size_t total_records = count_records(input_file);
+            size_t phase = 1;
+            size_t countA = count_records(fileA);
+            size_t countB = count_records(fileB);
+            size_t total = countA + countB;
+            std::cout << "  A: " << countA << " records, B: " << countB
+                << " records, Total: " << total << "\n";
+
+
+            std::string source1 = fileA;
+            std::string source2 = fileB;
+            std::string dest1 = fileC;
+            std::string dest2 = fileD;
+
+            // 2. Фаза слияния (merge phase)
+            while (run_length < total_records) {
+                std::cout << "Phase " << ++phase << ": Merging runs of length "
+                    << run_length << "...\n";
+
+                // Сливаем серии
+                merge_runs_balanced(source1, source2, dest1, dest2, run_length);
+
+                size_t countD1 = count_records(dest1);
+                size_t countD2 = count_records(dest2);
+                std::cout << "  " << dest1 << ": " << countD1 << " records\n";
+                std::cout << "  " << dest2 << ": " << countD2 << " records\n";
+                std::cout << "  Total after merge: " << (countD1 + countD2)
+                    << " (should be " << total << ")\n";
+
+                if (countD1 + countD2 != total) {
+                    std::cerr << "ERROR: Lost " << (total - countD1 - countD2)
+                        << " records!\n";
+                    // Можно вывести содержимое файлов для отладки
+                    debug_file_contents(dest1, "dest1");
+                    debug_file_contents(dest2, "dest2");
+                }
+
+                // Удваиваем длину серии для следующей итерации
+                run_length *= 2;
+
+                // Меняем роли файлов
+                std::swap(source1, dest1);
+                std::swap(source2, dest2);
+            }
+
+            // 3. Определяем, в каком файле результат
+            std::string result_file = (count_records(source1) > 0) ? source1 : source2;
+
+            // 4. Копируем результат в выходной файл
+            if (result_file != output_file) {
+                std::filesystem::copy(result_file, output_file,
+                    std::filesystem::copy_options::overwrite_existing);
+            }
+
+            // 5. Очистка
+            cleanup_temp_directory(temp_dir);
+
+            std::cout << "Sorted " << total_records << " records in "
+                << (phase - 1) << " merge phases\n";
+
+        }
+        catch (const std::exception& e) {
+            cleanup_temp_directory(temp_dir);
+            throw;
+        }
+    }
     
+    //-------- Служебные функции для сортировки ES2, ES3-------------//
+    
+    // Функция распределения по 2 файлам (ES2)
     static void distribute_alternately(const std::string& input_file,
-        const std::string& output1,
-        const std::string& output2) {
+        const std::string& output1, const std::string& output2) {
 
         std::ifstream input(input_file);
         std::ofstream out1(output1);
@@ -341,7 +347,7 @@ private:
 
             // Проверяем, что это число
             try {
-                std::stoul(line);
+                std::stoull(line);
             }
             catch (...) {
                 throw std::runtime_error("Invalid number: " + line);
@@ -363,12 +369,53 @@ private:
             << count1 << " to file1, " << count2 << " to file2\n";
     }
 
-    //объединение файлов
-    static void merge_runs_balanced(const std::string& input1,
-        const std::string& input2,
-        const std::string& output1,
-        const std::string& output2,
-        size_t run_length) {
+    // Функция распределения по 2 файлам c сортировкой блока (ES3)    
+    static void distribute_block(const std::string& input_file,
+        const std::string& output1, const std::string& output2) {
+        
+        std::ifstream input(input_file);
+        std::ofstream out1(output1);
+        std::ofstream out2(output2);
+
+        if (!input.is_open() || !out1.is_open() || !out2.is_open()) {
+            throw std::runtime_error("Cannot open files for distribution");
+        }
+
+        size_t block_size = 100; //потом параметризую
+        std::string line;
+        bool to_first = true;
+        size_t count1 = 0, count2 = 0;
+        
+        std::vector<uint32_t> block;
+        block.reserve(block_size);
+
+        auto save_to_file = [&block](std::ofstream* out) {
+            for(auto& it : block)             {
+                *out << it << '\n';
+            }
+        };
+        std::ofstream* current_output = &out1;
+
+        while (read_next_valid(input, line)) {
+            
+            block.push_back(get_key(line));            
+            if (block.size() == block_size) {
+                Sorter<uint32_t>::shell_sort_sedgewick(block.data(), block.size()); //тоже параметризовать?
+                save_to_file(current_output);
+                block.clear();
+                current_output = (current_output == &out1) ? &out2 : &out1;
+            }
+        }
+        //дозаписываем "хвост"
+        if (block.size() > 0) {
+            Sorter<uint32_t>::shell_sort_sedgewick(block.data(), block.size()); //тоже параметризовать?
+            save_to_file(current_output);            
+        }
+    }
+
+    //объединение файлов (ES2, ES3)
+    static void merge_runs_balanced(const std::string& input1, const std::string& input2,
+        const std::string& output1, const std::string& output2, size_t run_length) {
 
         std::ifstream in1(input1);
         std::ifstream in2(input2);
@@ -393,17 +440,16 @@ private:
             }
 
             total_merged += merged;
-            run_counter++;
+            ++run_counter;
 
             // Переключаемся на другой выходной файл после каждой пары серий
-            if (run_counter % 2 == 0) {
-                current_output = (current_output == &out1) ? &out2 : &out1;
-            }
+            current_output = (run_counter % 2) ? &out2 : &out1;            
         }
 
         std::cout << "  Merged " << total_merged << " records\n";
     }
 
+    //объединение двух участков (ES2, ES3)
     static size_t merge_two_runs_fixed_length(std::ifstream& in1,
         std::ifstream& in2,
         std::ofstream& out,
@@ -424,39 +470,34 @@ private:
 
             if (val1 <= val2) {
                 out << line1 << '\n';
-                total_written++;
-                has1 = read_next_valid(in1, line1);
-                count1++;
+                ++total_written;
+                has1 = (++count1 < run_length) ? read_next_valid(in1, line1) : false;
             }
             else {
                 out << line2 << '\n';
-                total_written++;
-                has2 = read_next_valid(in2, line2);
-                count2++;
+                ++total_written;
+                has2 = (++count2 < run_length) ? read_next_valid(in2, line2) : false;                
             }
         }
 
-        // Важно: докопируем остатки из каждой серии до её длины
+        // докопируем остатки из каждой серии до её длины
         // Первая серия
         while (has1 && count1 < run_length) {
             out << line1 << '\n';
-            total_written++;
-            has1 = read_next_valid(in1, line1);
-            count1++;
+            ++total_written;
+            has1 = (++count1 < run_length) ? read_next_valid(in1, line1) : false;            
         }
 
         // Вторая серия
         while (has2 && count2 < run_length) {
             out << line2 << '\n';
-            total_written++;
-            has2 = read_next_valid(in2, line2);
-            count2++;
+            ++total_written;            
+            has2 = (++count2 < run_length) ? read_next_valid(in2, line2) : false;
         }
-
         return total_written;
     }
 
-    //считываем непустую строчку из файла
+    //считываем непустую строчку из файла (ES2, ES3)
     static bool read_next_valid(std::ifstream& file, std::string& line) {
         // Читаем пока не найдём непустую строку или не конец файла
         while (std::getline(file, line)) {
@@ -467,7 +508,7 @@ private:
         return false;
     }
 
-    //подсчет записей в файле
+    //подсчет записей в файле (ES2, ES3)
     static size_t count_records(const std::string& filename) {
         if (!std::filesystem::exists(filename)) {
             return 0;
@@ -490,12 +531,13 @@ private:
         return count;
     }
 
-    // Простая проверка наличия данных
+    //Простая проверка наличия данных (ES2, ES3)
     static bool has_data(std::ifstream& file) {
-        // Проверяем, не достигли ли конца файла И есть ли что-то после текущей позиции
+        // Проверяем, не достигли ли конца файла и есть ли что-то после текущей позиции
         return !file.eof() && file.peek() != EOF;
     }
 
+    //Дебаг - удалить!!!
     static void debug_file_contents(const std::string& filename,
         const std::string& label) {
 
@@ -524,6 +566,8 @@ private:
             std::cout << "  (empty)\n";
         }
     }
+    
+
 };
 
 

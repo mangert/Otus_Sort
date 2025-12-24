@@ -72,9 +72,10 @@ int main() {
 
 	//test.run_all_tests(ExternalSorter::external_sort_method1, 999999, "ES1");
 	std::string file = "My_file.txt";
-	//ExternalSorter::generate_file(file, 10, 100);
+	ExternalSorter::generate_file(file, 400, 100);
+	ExternalSorter::distribute_block(file, "my_1.txt", "my_2.txt");
 
-	ExternalSorter::external_sort_method2(file, "My_file2.txt");
+	//ExternalSorter::external_sort_method2(file, "My_file2.txt");
 	
 	return 0; 
 }
