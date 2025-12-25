@@ -10,9 +10,8 @@
 #include <stdexcept>
 #include <exception>
 #include <functional>
-#include "Sorter.h"
 
-
+//класс содержит статические функции внешних сортировок и функцию, генерирующую файл из случайных чисел
 class ExternalSorter {
     
 public:
@@ -20,7 +19,7 @@ public:
     // ES1: Создание T файлов с последующим слиянием (Bucket Sort)
     static void external_sort_method1(const std::string& input_file,
         const std::string& output_file,
-        size_t T,
+        const size_t T,
         const std::string& temp_dir = "temp_buckets") {
 
         // 0. Создаём директорию для временных файлов
@@ -49,11 +48,23 @@ public:
         }
     }
           
-    // ES2: (Balanced two-way merge sort)
+    // ES2: Сортировка с использованием двух вспомогательных файлов (Balanced two-way merge sort)
     static void external_sort_method2(const std::string& input_file,
         const std::string& output_file, const std::string& temp_dir = "temp_merge") {
 
         _external_sort_generic(input_file, output_file, temp_dir, distribute_alternately, 1);
+    }
+
+    // ES3: Сортировка со считыванием чисел блоками (Block sort)
+    static void external_sort_method3(const std::string& input_file,
+        const std::string& output_file, 
+        const size_t block_size, std::function<void(uint32_t*, size_t)> sort_func, 
+        const std::string& temp_dir = "temp_block") {
+
+        _external_sort_generic(input_file, output_file, temp_dir, 
+            [&block_size, &sort_func](const auto& input, const auto& out1, const auto& out2) {
+                distribute_sorted_blocks(input, out1, out2, block_size, sort_func);
+            }, block_size);
     }
     
     //функция записи случайных чисел в файл
@@ -129,7 +140,7 @@ private:
     
     // Распределение чисел по bucket-файлам
     static void distribute_to_buckets(const std::string& input_file,
-        const std::string& temp_dir, size_t T) {
+        const std::string& temp_dir, const size_t T) {
 
         std::ifstream input(input_file);
         if (!input.is_open()) {
@@ -194,13 +205,13 @@ private:
 
     // Получение имени bucket-файла
     static std::string get_bucket_filename(const std::string& temp_dir,
-        size_t bucket_key) {
+        const size_t bucket_key) {
         return temp_dir + "/bucket_" + std::to_string(bucket_key) + ".txt";
     }
 
     // Объединение bucket-файлов в выходной файл
     static void merge_buckets(const std::string& output_file,
-        const std::string& temp_dir, size_t T) {
+        const std::string& temp_dir, const size_t T) {
 
         std::ofstream output(output_file);
         if (!output.is_open()) {
@@ -253,18 +264,13 @@ private:
         const std::string fileD = temp_dir + "/temp_merge_D.txt";
 
         try {
-            // 1. Фаза распределения (distribution phase)
-            std::cout << "=== Phase 1: Distribution ===\n";            
+            // 1. Фаза распределения (distribution phase)            
             distributor(input_file, fileA, fileB);
             
-            size_t total_records = count_records(input_file);
-            size_t phase = 1;
+            size_t total_records = count_records(input_file);            
             size_t countA = count_records(fileA);
             size_t countB = count_records(fileB);
-            size_t total = countA + countB;
-            std::cout << "  A: " << countA << " records, B: " << countB
-                << " records, Total: " << total << "\n";
-
+            size_t total = countA + countB;            
 
             std::string source1 = fileA;
             std::string source2 = fileB;
@@ -272,26 +278,16 @@ private:
             std::string dest2 = fileD;
 
             // 2. Фаза слияния (merge phase)
-            while (run_length < total_records) {
-                std::cout << "Phase " << ++phase << ": Merging runs of length "
-                    << run_length << "...\n";
-
+            while (run_length < total_records) {                
                 // Сливаем серии
                 merge_runs_balanced(source1, source2, dest1, dest2, run_length);
 
                 size_t countD1 = count_records(dest1);
                 size_t countD2 = count_records(dest2);
-                std::cout << "  " << dest1 << ": " << countD1 << " records\n";
-                std::cout << "  " << dest2 << ": " << countD2 << " records\n";
-                std::cout << "  Total after merge: " << (countD1 + countD2)
-                    << " (should be " << total << ")\n";
-
-                if (countD1 + countD2 != total) {
+                
+                if (countD1 + countD2 != total) { //проверка, что ничего не потеряли
                     std::cerr << "ERROR: Lost " << (total - countD1 - countD2)
-                        << " records!\n";
-                    // Можно вывести содержимое файлов для отладки
-                    debug_file_contents(dest1, "dest1");
-                    debug_file_contents(dest2, "dest2");
+                        << " records!\n";                    
                 }
 
                 // Удваиваем длину серии для следующей итерации
@@ -314,9 +310,6 @@ private:
             // 5. Очистка
             cleanup_temp_directory(temp_dir);
 
-            std::cout << "Sorted " << total_records << " records in "
-                << (phase - 1) << " merge phases\n";
-
         }
         catch (const std::exception& e) {
             cleanup_temp_directory(temp_dir);
@@ -338,9 +331,8 @@ private:
             throw std::runtime_error("Cannot open files for distribution");
         }
 
-        std::string line;
-        bool to_first = true;
-        size_t count1 = 0, count2 = 0;
+        std::string line; //данные
+        bool to_first = true; //переключатель  
 
         while (std::getline(input, line)) {
             if (line.empty()) continue;
@@ -354,24 +346,20 @@ private:
             }
 
             if (to_first) {
-                out1 << line << '\n';
-                count1++;
+                out1 << line << '\n';         
             }
             else {
-                out2 << line << '\n';
-                count2++;
+                out2 << line << '\n';              
             }
 
             to_first = !to_first;
-        }
-
-        std::cout << "  Distributed " << (count1 + count2) << " records: "
-            << count1 << " to file1, " << count2 << " to file2\n";
+        }        
     }
-
+    
     // Функция распределения по 2 файлам c сортировкой блока (ES3)    
-    static void distribute_block(const std::string& input_file,
-        const std::string& output1, const std::string& output2) {
+    static void distribute_sorted_blocks(const std::string& input_file,
+        const std::string& output1, const std::string& output2,
+        const size_t block_size, std::function<void(uint32_t*, size_t)> sort_func) {
         
         std::ifstream input(input_file);
         std::ofstream out1(output1);
@@ -379,17 +367,15 @@ private:
 
         if (!input.is_open() || !out1.is_open() || !out2.is_open()) {
             throw std::runtime_error("Cannot open files for distribution");
-        }
-
-        size_t block_size = 100; //потом параметризую
-        std::string line;
-        bool to_first = true;
+        }        
+        
+        std::string line;        
         size_t count1 = 0, count2 = 0;
         
         std::vector<uint32_t> block;
         block.reserve(block_size);
 
-        auto save_to_file = [&block](std::ofstream* out) {
+        auto save_to_file = [&block](std::ofstream* out) { //мини-функция записи числа из вектора в файл
             for(auto& it : block)             {
                 *out << it << '\n';
             }
@@ -400,7 +386,7 @@ private:
             
             block.push_back(get_key(line));            
             if (block.size() == block_size) {
-                Sorter<uint32_t>::shell_sort_sedgewick(block.data(), block.size()); //тоже параметризовать?
+                sort_func(block.data(), block.size()); //сортировка
                 save_to_file(current_output);
                 block.clear();
                 current_output = (current_output == &out1) ? &out2 : &out1;
@@ -408,7 +394,7 @@ private:
         }
         //дозаписываем "хвост"
         if (block.size() > 0) {
-            Sorter<uint32_t>::shell_sort_sedgewick(block.data(), block.size()); //тоже параметризовать?
+            sort_func(block.data(), block.size()); //сортировка
             save_to_file(current_output);            
         }
     }
@@ -428,8 +414,7 @@ private:
 
         std::ofstream* current_output = &out1;
         size_t run_counter = 0;
-        size_t total_merged = 0;
-
+        
         while (has_data(in1) || has_data(in2)) {
             // Сливаем две серии длины run_length
             size_t merged = merge_two_runs_fixed_length(in1, in2, *current_output, run_length);
@@ -437,16 +422,11 @@ private:
             if (merged == 0) {
                 // Больше нет данных
                 break;
-            }
-
-            total_merged += merged;
+            }            
             ++run_counter;
-
             // Переключаемся на другой выходной файл после каждой пары серий
             current_output = (run_counter % 2) ? &out2 : &out1;            
-        }
-
-        std::cout << "  Merged " << total_merged << " records\n";
+        }        
     }
 
     //объединение двух участков (ES2, ES3)
@@ -536,38 +516,6 @@ private:
         // Проверяем, не достигли ли конца файла и есть ли что-то после текущей позиции
         return !file.eof() && file.peek() != EOF;
     }
-
-    //Дебаг - удалить!!!
-    static void debug_file_contents(const std::string& filename,
-        const std::string& label) {
-
-        std::ifstream file(filename);
-        if (!file.is_open()) {
-            std::cout << label << ": cannot open\n";
-            return;
-        }
-
-        std::cout << label << " contents:\n";
-        std::string line;
-        size_t count = 0;
-
-        while (std::getline(file, line)) {
-            if (!line.empty()) {
-                std::cout << "  " << line << "\n";
-                count++;
-                if (count > 20) {
-                    std::cout << "  ... (showing first 20 lines)\n";
-                    break;
-                }
-            }
-        }
-
-        if (count == 0) {
-            std::cout << "  (empty)\n";
-        }
-    }
-    
-
 };
 
 

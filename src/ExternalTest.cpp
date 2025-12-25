@@ -39,7 +39,7 @@ public:
 
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-            std::cout << "\rSorting completed in " << duration.count() << " ms. Vefifying..." << std::flush;
+            std::cout << "\rSorting completed in " << duration.count() << " ms. Verifying..." << std::flush;
             std::cout << "\n";
             // Проверка результата             
             if (verify_sorted_file(output_file)) {
