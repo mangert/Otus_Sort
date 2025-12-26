@@ -12,7 +12,7 @@ endif()
 project ("Sorts")
 
 # Add source to this project's executable.
-add_executable (Sorts "src/main.cpp" "src/ExternalSorter.cpp" "src/ExternalTest.cpp")
+add_executable (Sorts "src/main.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Sorts PROPERTY CXX_STANDARD 20)
@@ -33,3 +33,8 @@ file(COPY ${TEST_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 # Передаем путь к тестам в код
 target_compile_definitions(Sorts PRIVATE 
    TEST_DIR="${CMAKE_BINARY_DIR}/Tests")
+
+# Для debug сборки включаем проверки
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(Sorts PRIVATE _DEBUG)
+endif()

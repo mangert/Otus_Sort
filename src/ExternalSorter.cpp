@@ -15,7 +15,6 @@
 class ExternalSorter {
     
 public:
-
     // ES1: Создание T файлов с последующим слиянием (Bucket Sort)
     static void external_sort_method1(const std::string& input_file,
         const std::string& output_file,
@@ -62,7 +61,7 @@ public:
         const std::string& temp_dir = "temp_block") {
 
         _external_sort_generic(input_file, output_file, temp_dir, 
-            [&block_size, &sort_func](const auto& input, const auto& out1, const auto& out2) {
+            [block_size, sort_func](const auto& input, const auto& out1, const auto& out2) {
                 distribute_sorted_blocks(input, out1, out2, block_size, sort_func);
             }, block_size);
     }
@@ -282,13 +281,16 @@ private:
                 // Сливаем серии
                 merge_runs_balanced(source1, source2, dest1, dest2, run_length);
 
+            #ifdef _DEBUG //проверка, что ничего не потеряли
                 size_t countD1 = count_records(dest1);
                 size_t countD2 = count_records(dest2);
                 
-                if (countD1 + countD2 != total) { //проверка, что ничего не потеряли
-                    std::cerr << "ERROR: Lost " << (total - countD1 - countD2)
-                        << " records!\n";                    
+                if (countD1 + countD2 != total) { 
+                    std::cerr << "ERROR: Data loss detected!\n";
+                    cleanup_temp_directory(temp_dir);  // Очистка
+                    throw std::runtime_error("External sort failed: data loss");                    
                 }
+            #endif
 
                 // Удваиваем длину серии для следующей итерации
                 run_length *= 2;
@@ -517,5 +519,3 @@ private:
         return !file.eof() && file.peek() != EOF;
     }
 };
-
-

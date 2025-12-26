@@ -1,17 +1,28 @@
 ﻿#include <iostream>
+#include <cstring>
 #include "Sorter.h"
 #include "Test.h"
 #include "test_cases.cpp"
-#include "generator.cpp"
 #include "ExternalSorter.cpp"
 #include "ExternalTest.cpp"
 
-int main() {
-	setlocale(LC_ALL, "Russian");
-	//1. тестирование алгоритмов сортировки в памяти
-	/*
-	{
+void print_help(const char* prog_name); //функция для вывода справки по аргументам cli
 
+int main(int argc, char* argv[]) {
+	setlocale(LC_ALL, "Russian");
+
+	std::string mode = "external"; //значение по умолчанию - чтобы проще запускать
+	
+	if (argc > 1) {
+		mode = argv[1];
+		if (mode == "-h" || mode == "help") {
+			print_help(argv[0]);
+			return 0;
+		}
+	}
+	
+	if (mode == "internal")	{
+		//1. тестирование алгоритмов сортировки в памяти
 		// Получаем все тестовые случаи
 		auto test_cases_32 = get_all_tests_uint32();
 		auto test_cases_8 = get_all_tests_uint8();
@@ -59,11 +70,9 @@ int main() {
 			}
 		}
 		
-	}
-	*/
-	//2. тестирование алгоритмов внешней сортировки
-	{
-
+	} else if (mode == "external") {
+		//2. тестирование алгоритмов внешней сортировки
+		
 		ExternalTest test; //класс для тестирования
 
 		std::cout << "========= Тестирование алгоритмов внешней сортировки ========\n";
@@ -90,7 +99,7 @@ int main() {
 		for (size_t i = 1; i <= 2; ++i) {
 
 			size_t block_size = 100 * i;
-			std::cout << "\nBlock size = " << block_size << "\n";
+			std::cout << "\nBlock size = " << block_size << "\n";			
 
 			auto es3_adapter = [block_size](const std::string& input_file,
 				const std::string& output_file,
@@ -101,8 +110,22 @@ int main() {
 						block_size, Sorter<uint32_t>::shell_sort_sedgewick);
 				};
 
-			test.run_all_tests(es3_adapter, 10000000, "ES3");
+			std::string info = "ES3 - block size = " + std::to_string(block_size);
+			
+			test.run_all_tests(es3_adapter, 10000000, info);
 		};
 	}
+	else {
+		std::cout << "Unknown mode\n";
+	}
+	
 	return 0; 
+}
+
+void print_help(const char* prog_name) {
+	std::cout << "Usage: " << prog_name << " [mode]\n";
+	std::cout << "Modes:\n";
+	std::cout << "  internal   - Test internal sorts\n";
+	std::cout << "  external   - Test external sorts (default)\n";
+	std::cout << "  help       - Show this message\n";
 }

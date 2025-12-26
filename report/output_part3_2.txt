@@ -1,0 +1,330 @@
+========= Тестирование алгоритмов внешней сортировки ========
+------ ES1 - Buckets sort
+ES1 Performance Test
+N       T=10    T=N
+
+=== Testing ES1: N = 100, T = 10 == =
+
+File test_output_100_10.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 84 ms
+
+==========================
+
+=== Testing ES1: N = 100, T = 100 == =
+
+File test_output_100_100.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 117 ms
+
+==========================
+
+=== Testing ES1: N = 1000, T = 10 == =
+
+File test_output_1000_10.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 54 ms
+
+==========================
+
+=== Testing ES1: N = 1000, T = 1000 == =
+
+File test_output_1000_1000.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 2365 ms
+
+==========================
+
+=== Testing ES1: N = 10000, T = 10 == =
+
+File test_output_10000_10.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 58 ms
+
+==========================
+
+=== Testing ES1: N = 10000, T = 10000 == =
+
+File test_output_10000_10000.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 22996 ms
+
+==========================
+
+=== Testing ES1: N = 100000, T = 10 == =
+
+File test_output_100000_10.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 460 ms
+
+==========================
+
+=== Testing ES1: N = 100000, T = 100000 == =
+
+File test_output_100000_100000.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 279219 ms
+
+==========================
+
+=== Testing ES1: N = 1000000, T = 10 == =
+
+File test_output_1000000_10.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 12192 ms
+
+==========================
+Test SKIPPED - too large data   ------ end Buckets sort
+------ ES2 - Balanced two-way merge sort
+ES2 Performance Test
+N       T=10    T=N
+
+=== Testing ES2: N = 100, T = 10 == =
+
+File test_output_100_10.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 104 ms
+
+==========================
+
+=== Testing ES2: N = 100, T = 100 == =
+
+File test_output_100_100.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 105 ms
+
+==========================
+
+=== Testing ES2: N = 1000, T = 10 == =
+
+File test_output_1000_10.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 158 ms
+
+==========================
+
+=== Testing ES2: N = 1000, T = 1000 == =
+
+File test_output_1000_1000.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 162 ms
+
+==========================
+
+=== Testing ES2: N = 10000, T = 10 == =
+
+File test_output_10000_10.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 379 ms
+
+==========================
+
+=== Testing ES2: N = 10000, T = 10000 == =
+
+File test_output_10000_10000.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 348 ms
+
+==========================
+
+=== Testing ES2: N = 100000, T = 10 == =
+
+File test_output_100000_10.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 1240 ms
+
+==========================
+
+=== Testing ES2: N = 100000, T = 100000 == =
+
+File test_output_100000_100000.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 1472 ms
+
+==========================
+
+=== Testing ES2: N = 1000000, T = 10 == =
+
+File test_output_1000000_10.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 10205 ms
+
+==========================
+
+=== Testing ES2: N = 1000000, T = 1000000 == =
+
+File test_output_1000000_1000000.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 12360 ms
+
+==========================
+------ end merge sort
+------ ES3 - Block sort
+
+Block size = 100
+ES3 - block size = 100 Performance Test
+N       T=10    T=N
+
+=== Testing ES3 - block size = 100: N = 100, T = 10 == =
+
+File test_output_100_10.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 24 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 100, T = 100 == =
+
+File test_output_100_100.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 25 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 1000, T = 10 == =
+
+File test_output_1000_10.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 84 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 1000, T = 1000 == =
+
+File test_output_1000_1000.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 77 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 10000, T = 10 == =
+
+File test_output_10000_10.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 172 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 10000, T = 10000 == =
+
+File test_output_10000_10000.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 284 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 100000, T = 10 == =
+
+File test_output_100000_10.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 826 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 100000, T = 100000 == =
+
+File test_output_100000_100000.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 908 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 1000000, T = 10 == =
+
+File test_output_1000000_10.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 7654 ms
+
+==========================
+
+=== Testing ES3 - block size = 100: N = 1000000, T = 1000000 == =
+
+File test_output_1000000_1000000.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 9440 ms
+
+==========================
+
+Block size = 200
+ES3 - block size = 200 Performance Test
+N       T=10    T=N
+
+=== Testing ES3 - block size = 200: N = 100, T = 10 == =
+
+File test_output_100_10.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 22 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 100, T = 100 == =
+
+File test_output_100_100.txt is correctly sorted (100 numbers)
+
+SUCCESS: Sorted 100 numbers in 24 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 1000, T = 10 == =
+
+File test_output_1000_10.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 62 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 1000, T = 1000 == =
+
+File test_output_1000_1000.txt is correctly sorted (1000 numbers)
+
+SUCCESS: Sorted 1000 numbers in 71 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 10000, T = 10 == =
+
+File test_output_10000_10.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 140 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 10000, T = 10000 == =
+
+File test_output_10000_10000.txt is correctly sorted (10000 numbers)
+
+SUCCESS: Sorted 10000 numbers in 156 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 100000, T = 10 == =
+
+File test_output_100000_10.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 813 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 100000, T = 100000 == =
+
+File test_output_100000_100000.txt is correctly sorted (100000 numbers)
+
+SUCCESS: Sorted 100000 numbers in 860 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 1000000, T = 10 == =
+
+File test_output_1000000_10.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 7082 ms
+
+==========================
+
+=== Testing ES3 - block size = 200: N = 1000000, T = 1000000 == =
+
+File test_output_1000000_1000000.txt is correctly sorted (1000000 numbers)
+
+SUCCESS: Sorted 1000000 numbers in 8532 ms
+
+==========================

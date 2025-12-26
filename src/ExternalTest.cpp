@@ -30,7 +30,7 @@ public:
             
             std::cout << "\nTest data generating...";
             ExternalSorter::generate_file(input_file, N, T);
-            std::cout << "\rData generaiting completed... Sorting..." << std::flush;
+            std::cout << "\rData generaiting completed! Sorting..." << std::flush;
 
             // Замер времени
             auto start = std::chrono::high_resolution_clock::now();
@@ -40,7 +40,7 @@ public:
             auto end = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
             std::cout << "\rSorting completed in " << duration.count() << " ms. Verifying..." << std::flush;
-            std::cout << "\n";
+            std::cout << "\r" << std::flush;
             // Проверка результата             
             if (verify_sorted_file(output_file)) {
                 std::cout << "\nSUCCESS: Sorted " << N << " numbers in "
@@ -129,12 +129,7 @@ private:
 
             prev = current;
             first_line = false;
-            line_num++;
-
-            // Периодический вывод прогресса для больших файлов
-            if (line_num % 1000000 == 0) {
-                std::cout << "  Verified " << line_num << " lines...\n";
-            }
+            line_num++;            
         }
 
         if (line_num == 0) {
