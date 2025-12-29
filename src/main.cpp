@@ -127,5 +127,5 @@ void print_help(const char* prog_name) {
 	std::cout << "Modes:\n";
 	std::cout << "  internal   - Test internal sorts\n";
 	std::cout << "  external   - Test external sorts (default)\n";
-	std::cout << "  help       - Show this message\n";
+	std::cout << "  --help       - Show this message\n";
 }
