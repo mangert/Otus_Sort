@@ -5,13 +5,15 @@
 #include "test_cases.cpp"
 #include "ExternalSorter.cpp"
 #include "ExternalTest.cpp"
+#include "LinearSorter.h"
+#include "generator.cpp"
 
 void print_help(const char* prog_name); //функция для вывода справки по аргументам cli
 
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Russian");
 
-	std::string mode = "external"; //значение по умолчанию - чтобы проще запускать
+	std::string mode = "test"; //значение по умолчанию - чтобы проще запускать
 	
 	if (argc > 1) {
 		mode = argv[1];
@@ -116,7 +118,15 @@ int main(int argc, char* argv[]) {
 		};
 	}
 	else {
-		std::cout << "Unknown mode\n";
+		//std::cout << "Unknown mode\n";
+		uint64_t my_arr[20];
+
+		data_generator::fill_random<uint64_t>(my_arr, 20, 100);
+		data_generator::print_array(my_arr, 20);
+		LinearSorter<uint64_t>::bucket_sort(my_arr, 20, 0, 100);
+		data_generator::print_array(my_arr, 20);
+
+
 	}
 	
 	return 0; 
