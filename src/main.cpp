@@ -121,16 +121,16 @@ int main(int argc, char* argv[]) {
 		//std::cout << "Unknown mode\n";
 		int64_t my_arr[20];
 
-		data_generator::fill_random<int64_t>(my_arr, 20, 100);
+		data_generator::fill_random<int64_t>(my_arr, 20, 11);
 		
-		for (int i = 0; i != 20; ++i) {
+		/*for (int i = 0; i != 20; ++i) {
 			my_arr[i] *= -1;
-		};
+		};*/
 		data_generator::print_array(my_arr, 20);
-		LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
+		/*LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
+		data_generator::print_array(my_arr, 20);*/
+		LinearSorter<int64_t>::counting_sort(my_arr, 20);
 		data_generator::print_array(my_arr, 20);
-
-
 	}
 	
 	return 0; 

@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 template<std::integral T>//будем использовать только целочисленные типы
 class LinearSorter {	
@@ -39,6 +40,44 @@ public:
 			static_cast<size_t>(std::sqrt(size)));
 		bucket_sort_impl(data, size, min_val, max_val, bucket_count);
 	}	
+
+	// ---------- Counting sort -----------------	
+	static void counting_sort(T* data, size_t size) {
+		if (size < 2) return;
+
+		// 1. Находим min/max
+		auto [min_val, max_val] = min_max(data, size);
+		if (min_val == max_val) return;
+
+		//T range = max_val - min_val + 1; //добавить offset
+		T range = max_val + 1; //добавить offset и заменить на max_val - min_val + 1 + offset
+		// 2. Считаем элементы
+		std::vector<size_t> counters(range);
+		for (size_t i = 0; i != size; ++i) {
+			++counters[data[i]]; //вот здесь тоже offset (только как старт)
+		};
+		T start = 0;		
+		auto transform = [&](T el) { start += el; el = start; return el; };
+		for (auto& el : counters) { //заменить на стандартный алгоритм
+			el = transform(el);
+		};
+		// 3. Создаем отсортированный массив
+		T* new_data = new T[size];
+
+		for (size_t i = size; i > 0; --i) {
+			T val = data[i-1];
+			size_t idx = --counters[val];
+			new_data[idx] = val;
+		};
+
+		// 4. Переносим в исходный массив
+		for (size_t i = 0; i != size; ++i) {
+			data[i] = new_data[i];
+		};
+
+		//delete[] new_data; //разобраться, что не так, почему падает?
+
+	}
 
 private:	
 	// ---------- Вспомогательная структура для BucketSort -----------------
