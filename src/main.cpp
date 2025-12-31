@@ -119,11 +119,15 @@ int main(int argc, char* argv[]) {
 	}
 	else {
 		//std::cout << "Unknown mode\n";
-		uint64_t my_arr[20];
+		int64_t my_arr[20];
 
-		data_generator::fill_random<uint64_t>(my_arr, 20, 100);
+		data_generator::fill_random<int64_t>(my_arr, 20, 100);
+		
+		for (int i = 0; i != 20; ++i) {
+			my_arr[i] *= -1;
+		};
 		data_generator::print_array(my_arr, 20);
-		LinearSorter<uint64_t>::bucket_sort(my_arr, 20, 0, 100);
+		LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
 		data_generator::print_array(my_arr, 20);
 
 
