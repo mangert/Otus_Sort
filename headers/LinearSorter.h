@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <numeric>
 
 template<std::integral T>//будем использовать только целочисленные типы
 class LinearSorter {	
@@ -45,38 +46,43 @@ public:
 	static void counting_sort(T* data, size_t size) {
 		if (size < 2) return;
 
-		// 1. Находим min/max
+		//Находим min/max
 		auto [min_val, max_val] = min_max(data, size);
 		if (min_val == max_val) return;
 
-		//T range = max_val - min_val + 1; //добавить offset
-		T range = max_val + 1; //добавить offset и заменить на max_val - min_val + 1 + offset
-		// 2. Считаем элементы
-		std::vector<size_t> counters(range);
-		for (size_t i = 0; i != size; ++i) {
-			++counters[data[i]]; //вот здесь тоже offset (только как старт)
+		//Формируем диапазон и выделяем вектор для подсчетов
+		T range_val = max_val - min_val + 1;	
+
+		size_t range = static_cast<size_t>(range_val);
+		std::vector<size_t> counters;
+		try {
+			counters.resize(range, 0);
+		}
+		catch (const std::bad_alloc& e) {
+			throw std::runtime_error("Not enough memory for counting sort");
 		};
-		T start = 0;		
-		auto transform = [&](T el) { start += el; el = start; return el; };
-		for (auto& el : counters) { //заменить на стандартный алгоритм
-			el = transform(el);
-		};
-		// 3. Создаем отсортированный массив
-		T* new_data = new T[size];
+
+		//Считаем элементы (со смещением)
+		for (size_t i = 0; i < size; ++i) {
+			size_t index = static_cast<size_t>(data[i] - min_val);
+			++counters[index];
+		}
+
+		//Префиксные суммы
+		std::partial_sum(counters.begin(), counters.end(), counters.begin());		
+
+		//Создаем отсортированный массив
+		std::unique_ptr<T[]> new_data(new T[size]);
 
 		for (size_t i = size; i > 0; --i) {
-			T val = data[i-1];
-			size_t idx = --counters[val];
+			T val = data[i - 1];
+			size_t index = static_cast<size_t>(val - min_val);
+			size_t idx = --counters[index];  // уменьшаем и получаем позицию
 			new_data[idx] = val;
-		};
+		}
 
-		// 4. Переносим в исходный массив
-		for (size_t i = 0; i != size; ++i) {
-			data[i] = new_data[i];
-		};
-
-		//delete[] new_data; //разобраться, что не так, почему падает?
-
+		//Копируем обратно
+		std::copy_n(new_data.get(), size, data);		
 	}
 
 private:	
