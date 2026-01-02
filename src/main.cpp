@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	if (mode == "internal")	{
+	if (mode == "internal") {
 		//1. тестирование алгоритмов сортировки в памяти
 		// Получаем все тестовые случаи
 		auto test_cases_32 = get_all_tests_uint32();
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 				}
 			}
 		}
-		
+
 		//Отдельная проверка записи отсортированного массива в файл после тестирования
 		//будем проверять для алгоритма пирамидальной сортировки для всех видов данных
 		std::cout << "Sample test with files output\n";
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 				test.run_all(test_cases_32[1].max_size, true);
 			}
 		}
-		
+
 	} else if (mode == "external") {
 		//2. тестирование алгоритмов внешней сортировки
 		
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 		test.run_all_tests(es2_adapter, 10000000, "ES2");
 
 		std::cout << "------ end merge sort\n";
-
+		
 		std::cout << "------ ES3 - Block sort\n";
 
 		for (size_t i = 1; i <= 2; ++i) {
@@ -121,15 +121,15 @@ int main(int argc, char* argv[]) {
 		//std::cout << "Unknown mode\n";
 		int64_t my_arr[20];
 
-		data_generator::fill_random<int64_t>(my_arr, 20, 11);
+		data_generator::fill_random<int64_t>(my_arr, 20, 1000);
 		
-		/*for (int i = 0; i != 20; ++i) {
-			my_arr[i] *= -1;
-		};*/
+		for (int i = 0; i != 20; ++i) {
+			my_arr[i] -= 500;
+		};
 		data_generator::print_array(my_arr, 20);
-		/*LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
-		data_generator::print_array(my_arr, 20);*/
-		LinearSorter<int64_t>::counting_sort(my_arr, 20);
+		/*LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);*/
+		//data_generator::print_array(my_arr, 20);
+		LinearSorter<int64_t>::radix_sort(my_arr, 20, 8);
 		data_generator::print_array(my_arr, 20);
 	}
 	

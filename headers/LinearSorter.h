@@ -7,17 +7,17 @@
 #include <numeric>
 
 template<std::integral T>//будем использовать только целочисленные типы
-class LinearSorter {	
+class LinearSorter {
 
 public:
 	// ---------- Bucket sort -----------------	
-	
+
 	//основная функция - всегда вычисляет min/max
 	static void bucket_sort(T* data, size_t size) {
 		if (size < 2) return;
 
 		// 1. Находим min/max
-		auto [min_val, max_val] =min_max(data, size);
+		auto [min_val, max_val] = min_max(data, size);
 		if (min_val == max_val) return;
 
 		// 2. Автоматически выбираем стратегию
@@ -40,7 +40,7 @@ public:
 		size_t bucket_count = std::max(size_t(1),
 			static_cast<size_t>(std::sqrt(size)));
 		bucket_sort_impl(data, size, min_val, max_val, bucket_count);
-	}	
+	}
 
 	// ---------- Counting sort -----------------	
 	static void counting_sort(T* data, size_t size) {
@@ -83,6 +83,47 @@ public:
 
 		//Копируем обратно
 		std::copy_n(new_data.get(), size, data);		
+	}
+
+	// ---------- Radix sort -----------------
+	static void radix_sort(T* data, size_t size, uint8_t base) {
+		
+		if (size < 2) return;
+
+		//Находим min/max
+		auto [min_val, max_val] = min_max(data, size);
+		if (min_val == max_val) return;
+		
+		// Для отрицательных чисел - сдвигаем все в положительную область
+		T offset = 0;
+		if (min_val < 0) {
+			if (min_val > std::numeric_limits<T>::min()) {
+				offset = -min_val;
+				// Корректируем max_val
+				if (max_val > std::numeric_limits<T>::max() - offset) {
+					throw std::overflow_error("Range too large after offset");
+				}
+				max_val += offset;
+			}
+			else {
+				// Особый случай: min_val = T::min() - не влезем в диапазон				
+				throw std::overflow_error("Cannot offset minimal value");
+			}
+		}
+
+		// Предвычисляем степени base
+		std::vector<T> powers;
+		T power = 1;
+		while (max_val / power > 0) {
+			powers.push_back(power);
+			if (power > std::numeric_limits<T>::max() / base) break;
+			power *= base;
+		}
+
+		// Сортируем по каждому разряду
+		for (T exp : powers) {
+			counting_sort_for_radix(data, size, base, exp, offset);
+		}
 	}
 
 private:	
@@ -143,6 +184,7 @@ private:
 			throw e;
 		}
 	};
+	
 	//функция для определения количества корзин
 	static size_t calculate_bucket_count(size_t n, T min_val, T max_val) {
 		
@@ -201,5 +243,34 @@ private:
 		new_node->next = std::move(current->next);
 		current->next = std::move(new_node);
 	};	
+	
+	// ---------- Служебные функции для radix sort -----------------	
+		static void counting_sort_for_radix(T* data, size_t size, uint8_t base, T exp, T offset) {
 
+			// Счетчики
+			std::vector<size_t> counters(base, 0);
+
+			// Подсчет цифр
+			for (size_t i = 0; i < size; ++i) {
+				T val = data[i] + offset;  // применяем смещение
+				uint16_t digit = static_cast<uint16_t>((val / exp) % base);
+				++counters[digit];
+			}
+
+			// Префиксные суммы
+			std::partial_sum(counters.begin(), counters.end(), counters.begin());
+
+			// Сортировка (второй проход)
+			std::unique_ptr<T[]> new_data(new T[size]);
+
+			for (size_t i = size; i > 0; --i) {
+				T val = data[i - 1] + offset;
+				uint16_t digit = static_cast<uint16_t>((val / exp) % base);
+				size_t pos = --counters[digit];
+				new_data[pos] = data[i - 1];  // сохраняем исходное значение
+			}
+
+			// Копируем обратно
+			std::copy_n(new_data.get(), size, data);
+		}
 };
