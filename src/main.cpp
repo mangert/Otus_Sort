@@ -6,6 +6,7 @@
 #include "ExternalSorter.cpp"
 #include "ExternalTest.cpp"
 #include "LinearSorter.h"
+#include "LinearTest.h"
 #include "generator.cpp"
 
 void print_help(const char* prog_name); //функция для вывода справки по аргументам cli
@@ -13,7 +14,7 @@ void print_help(const char* prog_name); //функция для вывода с�
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Russian");
 
-	std::string mode = "test"; //значение по умолчанию - чтобы проще запускать
+	std::string mode = "linear"; //значение по умолчанию - чтобы проще запускать
 	
 	if (argc > 1) {
 		mode = argv[1];
@@ -117,9 +118,11 @@ int main(int argc, char* argv[]) {
 			test.run_all_tests(es3_adapter, 10000000, info);
 		};
 	}
-	else {
+	else if (mode == "linear") { //тестируем линейные сортировки
+		
+		
 		//std::cout << "Unknown mode\n";
-		int64_t my_arr[20];
+		/*int64_t my_arr[20];
 
 		data_generator::fill_random<int64_t>(my_arr, 20, 1000);
 		
@@ -127,11 +130,17 @@ int main(int argc, char* argv[]) {
 			my_arr[i] -= 500;
 		};
 		data_generator::print_array(my_arr, 20);
-		/*LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);*/
+		LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
 		//data_generator::print_array(my_arr, 20);
 		LinearSorter<int64_t>::radix_sort(my_arr, 20, 8);
-		data_generator::print_array(my_arr, 20);
-	}
+		data_generator::print_array(my_arr, 20);*/
+		auto radix = [](int16_t* arr, size_t size) {LinearSorter<int16_t>::radix_sort(arr, size, 10); };
+		LinearTest<int16_t> test(radix);
+		test.run_all("test");
+
+	} else {
+		std::cout << "Unknown mode\n";
+	};
 	
 	return 0; 
 }
@@ -140,6 +149,7 @@ void print_help(const char* prog_name) {
 	std::cout << "Usage: " << prog_name << " [mode]\n";
 	std::cout << "Modes:\n";
 	std::cout << "  internal   - Test internal sorts\n";
-	std::cout << "  external   - Test external sorts (default)\n";
+	std::cout << "  external   - Test external sorts\n";
+	std::cout << "  linear     - Test linear sorts (default)\n";
 	std::cout << "  --help       - Show this message\n";
 }

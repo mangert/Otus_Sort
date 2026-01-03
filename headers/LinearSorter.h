@@ -24,7 +24,7 @@ public:
 		size_t bucket_count = calculate_bucket_count(size, min_val, max_val);
 
 		// 3. Сортируем
-		bucket_sort_impl(data, size, min_val, max_val, bucket_count);
+		bucket_sort_impl(data, size, min_val, max_val, bucket_count);		
 	}
 
 	// с количеством корзин равным количеству элементов
@@ -92,7 +92,7 @@ public:
 
 		//Находим min/max
 		auto [min_val, max_val] = min_max(data, size);
-		if (min_val == max_val) return;
+		if (min_val == max_val) return;		
 		
 		// Для отрицательных чисел - сдвигаем все в положительную область
 		T offset = 0;
@@ -120,9 +120,20 @@ public:
 			power *= base;
 		}
 
+		//создаем буферы
+		std::unique_ptr<T[]> buffer(new T[size]);
+		T* src = data;
+		T* dst = buffer.get();
+
 		// Сортируем по каждому разряду
 		for (T exp : powers) {
-			counting_sort_for_radix(data, size, base, exp, offset);
+			counting_sort_for_radix(src, size, base, exp, offset, dst);
+			std::swap(src, dst);  // меняем указатели
+		}
+
+		// Если результат не в data, копируем
+		if (src != data) {
+			std::copy_n(src, size, data);
 		}
 	}
 
@@ -130,7 +141,7 @@ private:
 	// ---------- Вспомогательная структура для BucketSort -----------------
 	struct Node {
 		T key;
-		std::unique_ptr<Node> next;
+		std::unique_ptr<Node> next;		
 	
 		explicit Node(T key) : key(key), next(nullptr) {};
 		Node(const Node&) = delete;
@@ -138,7 +149,12 @@ private:
 		Node& operator=(Node&&) = delete;
 		Node& operator=(const Node&) = delete;
 		
-		~Node() = default;
+		~Node() { //чистим список итеративно			
+			std::unique_ptr<Node> current = std::move(next);
+			while (current) {
+				current = std::move(current->next);
+			}
+		}
 	};
 	// ---------- Общие вспомогательные функции -----------------
 	//минимальное и максимальное значение
@@ -164,13 +180,14 @@ private:
 		T offset = 0; //смещение - для обработки отрицательных чисел
 		if (min_val < 0) {
 			offset = -min_val;
-		};
+		};		
 		try {
 			for (size_t i = 0; i != size; ++i) {
-				size_t bucket = get_bucket_index(data[i], min_val, max_val, offset, bucket_count);
-				add_to_bucket(buckets[bucket], data[i]);
+				size_t bucket = get_bucket_index(data[i], min_val, max_val, offset, bucket_count);				
+				add_to_bucket(buckets[bucket], data[i]);				
 			}
-
+			
+			
 			size_t idx = 0;
 			for (auto& bucket_head : buckets) {
 				Node* current = bucket_head.get();
@@ -178,7 +195,7 @@ private:
 					data[idx++] = current->key;
 					current = current->next.get();
 				}
-			}
+			}			
 		}
 		catch (std::exception& e) {
 			throw e;
@@ -245,7 +262,7 @@ private:
 	};	
 	
 	// ---------- Служебные функции для radix sort -----------------	
-		static void counting_sort_for_radix(T* data, size_t size, uint8_t base, T exp, T offset) {
+		static void counting_sort_for_radix(T* data, size_t size, uint8_t base, T exp, T offset, T* new_data) {
 
 			// Счетчики
 			std::vector<size_t> counters(base, 0);
@@ -260,8 +277,7 @@ private:
 			// Префиксные суммы
 			std::partial_sum(counters.begin(), counters.end(), counters.begin());
 
-			// Сортировка (второй проход)
-			std::unique_ptr<T[]> new_data(new T[size]);
+			// Сортировка (второй проход)			
 
 			for (size_t i = size; i > 0; --i) {
 				T val = data[i - 1] + offset;
@@ -269,8 +285,5 @@ private:
 				size_t pos = --counters[digit];
 				new_data[pos] = data[i - 1];  // сохраняем исходное значение
 			}
-
-			// Копируем обратно
-			std::copy_n(new_data.get(), size, data);
 		}
 };

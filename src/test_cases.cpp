@@ -67,7 +67,7 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 		{Sorter<uint8_t>::insertion_sort_shift, "insertion_shift", 500000},
 		{Sorter<uint8_t>::insertion_sort_bin, "insertion_bin", 1000000},
 		{Sorter<uint8_t>::selection_sort, "selection", 500000},
-		
+
 		// Быстрые алгоритмы - без ограничений
 		{Sorter<uint8_t>::shell_sort, "shell", 0},
 		{Sorter<uint8_t>::shell_sort_knuth_arr, "shell_knuth_arr", 0},
@@ -82,9 +82,10 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 
 		//алгоритмы третьего ДЗ
 		{Sorter<uint8_t>::quick_sort, "quick_sort", 99999},
-		{Sorter<uint8_t>::quick_sort_optimized, "quick_sort_opt", 99999},		
+		{Sorter<uint8_t>::quick_sort_optimized, "quick_sort_opt", 99999},
 		{Sorter<uint8_t>::quick_sort_safe, "quick_sort_safe", 0},
 		{Sorter<uint8_t>::merge_sort, "merge_sort", 0}
 
 	};
-}
+
+};
