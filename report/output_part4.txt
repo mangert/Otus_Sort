@@ -1,0 +1,329 @@
+======================================================
+Range: from 0 to 999
+==========================================================
+
+========== Testing: bucket sort ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 10 ms
+Test 3: PASS | Size: 100000 | Time: 264 ms
+Test 4: PASS | Size: 1000000 | Time: 801 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort linear ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 6 ms
+Test 3: PASS | Size: 100000 | Time: 79 ms
+Test 4: PASS | Size: 1000000 | Time: 861 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort sqrt ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 9 ms
+Test 3: PASS | Size: 100000 | Time: 205 ms
+Test 4: PASS | Size: 1000000 | Time: 787 ms
+========== End testing ==========
+
+
+========== Testing: counting sort ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 2 ms
+Test 4: PASS | Size: 1000000 | Time: 25 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 10 ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 9 ms
+Test 4: PASS | Size: 1000000 | Time: 87 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 2 ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 3 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 278 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 8 ==========
+
+min_value: 0 max_value: 999
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 279 ms
+========== End testing ==========
+
+
+
+======================================================
+Range: from -100 to 899
+==========================================================
+
+========== Testing: bucket sort ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 9 ms
+Test 3: PASS | Size: 100000 | Time: 209 ms
+Test 4: PASS | Size: 1000000 | Time: 779 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort linear ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 6 ms
+Test 3: PASS | Size: 100000 | Time: 75 ms
+Test 4: PASS | Size: 1000000 | Time: 858 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort sqrt ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 8 ms
+Test 3: PASS | Size: 100000 | Time: 191 ms
+Test 4: PASS | Size: 1000000 | Time: 789 ms
+========== End testing ==========
+
+
+========== Testing: counting sort ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 2 ms
+Test 4: PASS | Size: 1000000 | Time: 24 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 10 ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 9 ms
+Test 4: PASS | Size: 1000000 | Time: 87 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 2 ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 30 ms
+Test 4: PASS | Size: 1000000 | Time: 282 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 8 ==========
+
+min_value: -100 max_value: 899
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 277 ms
+========== End testing ==========
+
+
+
+======================================================
+Range: from -500 to 499
+==========================================================
+
+========== Testing: bucket sort ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 8 ms
+Test 3: PASS | Size: 100000 | Time: 200 ms
+Test 4: PASS | Size: 1000000 | Time: 783 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort linear ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 6 ms
+Test 3: PASS | Size: 100000 | Time: 79 ms
+Test 4: PASS | Size: 1000000 | Time: 875 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort sqrt ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 9 ms
+Test 3: PASS | Size: 100000 | Time: 196 ms
+Test 4: PASS | Size: 1000000 | Time: 782 ms
+========== End testing ==========
+
+
+========== Testing: counting sort ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 2 ms
+Test 4: PASS | Size: 1000000 | Time: 23 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 10 ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 9 ms
+Test 4: PASS | Size: 1000000 | Time: 87 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 2 ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 280 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 8 ==========
+
+min_value: -500 max_value: 499
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 282 ms
+========== End testing ==========
+
+
+
+======================================================
+Range: from -999 to 0
+==========================================================
+
+========== Testing: bucket sort ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 8 ms
+Test 3: PASS | Size: 100000 | Time: 191 ms
+Test 4: PASS | Size: 1000000 | Time: 791 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort linear ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 6 ms
+Test 3: PASS | Size: 100000 | Time: 74 ms
+Test 4: PASS | Size: 1000000 | Time: 875 ms
+========== End testing ==========
+
+
+========== Testing: bucket sort sqrt ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 9 ms
+Test 3: PASS | Size: 100000 | Time: 193 ms
+Test 4: PASS | Size: 1000000 | Time: 792 ms
+========== End testing ==========
+
+
+========== Testing: counting sort ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 2 ms
+Test 4: PASS | Size: 1000000 | Time: 23 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 10 ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 0 ms
+Test 3: PASS | Size: 100000 | Time: 8 ms
+Test 4: PASS | Size: 1000000 | Time: 87 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 2 ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 3 ms
+Test 3: PASS | Size: 100000 | Time: 28 ms
+Test 4: PASS | Size: 1000000 | Time: 276 ms
+========== End testing ==========
+
+
+========== Testing: radix sort with base 8 ==========
+
+min_value: -999 max_value: 0
+Test 0: PASS | Size: 100 | Time: 0 ms
+Test 1: PASS | Size: 1000 | Time: 0 ms
+Test 2: PASS | Size: 10000 | Time: 2 ms
+Test 3: PASS | Size: 100000 | Time: 32 ms
+Test 4: PASS | Size: 1000000 | Time: 279 ms
+========== End testing ==========
+
+
+D:\Otus_Algo\Sorts\out\build\x64-debug\Sorts.exe (process 13816) exited with code 0 (0x0).
+Press any key to close this window . . .

@@ -4,6 +4,7 @@
 #include "Sorter.h"
 #include "Test.h"
 #include <string>
+#include "LinearSorter.h"
 
 struct TestCase32 {
 	using FuncPtr = void(*)(uint32_t*, size_t);
@@ -19,7 +20,7 @@ struct TestCase32 {
 inline std::vector<TestCase32> get_all_tests_uint32() {
 	return {
 		// Медленные алгоритмы - маленькие лимиты
-		/*{Sorter<uint32_t>::bubble_sort, "bubble", 100000},
+		{Sorter<uint32_t>::bubble_sort, "bubble", 100000},
 		{Sorter<uint32_t>::bubble_sort_opt, "bubble_opt", 200000},
 		{Sorter<uint32_t>::insertion_sort, "insertion", 500000},
 		{Sorter<uint32_t>::insertion_sort_shift, "insertion_shift", 500000},
@@ -36,7 +37,7 @@ inline std::vector<TestCase32> get_all_tests_uint32() {
 
 		//алгоритмы второго ДЗ
 		{Sorter<uint32_t>::selection_sort, "selection", 500000},
-		{Sorter<uint32_t>::heap_sort, "heap sort", 0},*/
+		{Sorter<uint32_t>::heap_sort, "heap sort", 0},
 
 		//алгоритмы третьего ДЗ
 		{Sorter<uint32_t>::quick_sort, "quick_sort", 0},
@@ -61,7 +62,7 @@ struct TestCase8 {
 inline std::vector<TestCase8> get_all_tests_uint8() {
 	return {
 		// Для uint8_t можно больше - меньше памяти
-		/*{Sorter<uint8_t>::bubble_sort, "bubble", 200000},
+		{Sorter<uint8_t>::bubble_sort, "bubble", 200000},
 		{Sorter<uint8_t>::bubble_sort_opt, "bubble_opt", 500000},
 		{Sorter<uint8_t>::insertion_sort, "insertion", 500000},
 		{Sorter<uint8_t>::insertion_sort_shift, "insertion_shift", 500000},
@@ -78,7 +79,7 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 
 		//алгоритмы второго ДЗ
 		{Sorter<uint8_t>::selection_sort, "selection", 500000},
-		{Sorter<uint8_t>::heap_sort, "heap sort", 0}, */
+		{Sorter<uint8_t>::heap_sort, "heap sort", 0},
 
 		//алгоритмы третьего ДЗ
 		{Sorter<uint8_t>::quick_sort, "quick_sort", 99999},
@@ -89,3 +90,30 @@ inline std::vector<TestCase8> get_all_tests_uint8() {
 	};
 
 };
+
+struct TestCaseLinear {
+	using FuncPtr = void(*)(int16_t*, size_t);
+	FuncPtr function;
+	std::string info;
+
+	TestCaseLinear(FuncPtr func, std::string info)
+		: function(func), info(std::move(info)) {
+	};
+};
+
+inline std::vector<TestCaseLinear> get_all_tests_linear() {
+	return {
+
+		{LinearSorter<int16_t>::bucket_sort, "bucket sort"},
+		{LinearSorter<int16_t>::bucket_sort_linear, "bucket sort linear"},
+		{LinearSorter<int16_t>::bucket_sort_sqrt, "bucket sort sqrt"},
+		{LinearSorter<int16_t>::counting_sort, "counting sort"},
+		{[](int16_t* data, size_t size) {LinearSorter<int16_t>::radix_sort(data, size, 10); },
+			"radix sort with base 10"},
+		{[](int16_t* data, size_t size) {LinearSorter<int16_t>::radix_sort(data, size, 2); },
+			"radix sort with base 2"},
+		{[](int16_t* data, size_t size) {LinearSorter<int16_t>::radix_sort(data, size, 2); },
+			"radix sort with base 8"},
+	};
+
+}

@@ -15,8 +15,8 @@ public:
     using FuncPtr = void(*)(T*, size_t);  // сигнатура функции сортировки
 
     LinearTest(FuncPtr test_run) : test_run(test_run) {};
-    LinearTest(T* max, T* min, FuncPtr test_run) 
-        : max_val(max), min_val(min), test_run(test_run) {};
+    LinearTest(T min, T max, FuncPtr test_run) 
+        : min_val(min), max_val(max), test_run(test_run) {};
 
     void run_all(std::string sort_info) {        
 
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    
+    //генерируем массив случайных чисел в заданном диапазоне
     std::shared_ptr<T[]> generate_data(T min, T max, size_t size) {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -45,6 +45,7 @@ private:
         return data;
     };
 
+    //запуск одного теста
     void run_test(int test_num, T* data, size_t size) {
 
         //сохраняем исходный массив для проверки
@@ -76,6 +77,7 @@ private:
         }
     }
 
+    //проверка, что отсортировалось и данные не испортились
     bool verify_result(T* original, T* sorted, size_t size) {
         // Быстрая проверка что отсортировано
         if (!std::is_sorted(sorted, sorted + size)) return false;
@@ -99,7 +101,7 @@ private:
 
 private:
     FuncPtr test_run; //функция для тестирования
-    std::vector<size_t> test_cases = { 100, 1000, 10000, 100000, 1000000};
-    T max_val = 600;
-    T min_val = -400;    
+    std::vector<size_t> test_cases = { 100, 1000, 10000, 100000, 1000000};    
+    T min_val = 0;    
+    T max_val = 999;
 };

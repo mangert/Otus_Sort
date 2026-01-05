@@ -73,9 +73,10 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
-	} else if (mode == "external") {
+	}
+	else if (mode == "external") {
 		//2. тестирование алгоритмов внешней сортировки
-		
+
 		ExternalTest test; //класс для тестирования
 
 		std::cout << "========= Тестирование алгоритмов внешней сортировки ========\n";
@@ -96,13 +97,13 @@ int main(int argc, char* argv[]) {
 		test.run_all_tests(es2_adapter, 10000000, "ES2");
 
 		std::cout << "------ end merge sort\n";
-		
+
 		std::cout << "------ ES3 - Block sort\n";
 
 		for (size_t i = 1; i <= 2; ++i) {
 
 			size_t block_size = 100 * i;
-			std::cout << "\nBlock size = " << block_size << "\n";			
+			std::cout << "\nBlock size = " << block_size << "\n";
 
 			auto es3_adapter = [block_size](const std::string& input_file,
 				const std::string& output_file,
@@ -114,30 +115,30 @@ int main(int argc, char* argv[]) {
 				};
 
 			std::string info = "ES3 - block size = " + std::to_string(block_size);
-			
+
 			test.run_all_tests(es3_adapter, 10000000, info);
 		};
 	}
 	else if (mode == "linear") { //тестируем линейные сортировки
-		
-		
-		//std::cout << "Unknown mode\n";
-		/*int64_t my_arr[20];
 
-		data_generator::fill_random<int64_t>(my_arr, 20, 1000);
-		
-		for (int i = 0; i != 20; ++i) {
-			my_arr[i] -= 500;
+		auto test_cases = get_all_tests_linear();
+		std::vector<std::pair<int16_t, int16_t>> ranges = {
+			{0, 999},       // основной
+			{-100, 899},    // смещенный
+			{-500, 499},    // симметричный
+			{-999, 0}       // только отрицательные
 		};
-		data_generator::print_array(my_arr, 20);
-		LinearSorter<int64_t>::bucket_sort_linear(my_arr, 20);
-		//data_generator::print_array(my_arr, 20);
-		LinearSorter<int64_t>::radix_sort(my_arr, 20, 8);
-		data_generator::print_array(my_arr, 20);*/
-		auto radix = [](int16_t* arr, size_t size) {LinearSorter<int16_t>::radix_sort(arr, size, 10); };
-		LinearTest<int16_t> test(radix);
-		test.run_all("test");
+		// Проходим по всем алгоритмам в каждом диапазоне
+		for (auto& range : ranges) {
+			std::cout << "\n\n======================================================\n";
+			std::cout << "Range: from " << range.first << " to " << range.second << "\n";
+			std::cout << "==========================================================\n";
+			for (size_t counter = 0; counter != test_cases.size(); ++counter) {
 
+				LinearTest<int16_t> test(range.first, range.second, test_cases[counter].function);
+				test.run_all(test_cases[counter].info);
+			};
+		};
 	} else {
 		std::cout << "Unknown mode\n";
 	};
