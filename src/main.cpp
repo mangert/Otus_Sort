@@ -7,14 +7,14 @@
 #include "ExternalTest.cpp"
 #include "LinearSorter.h"
 #include "LinearTest.h"
-#include "generator.cpp"
+#include "BinaryFileSorter.cpp"
 
 void print_help(const char* prog_name); //функция для вывода справки по аргументам cli
 
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Russian");
 
-	std::string mode = "linear"; //значение по умолчанию - чтобы проще запускать
+	std::string mode = "bin"; //значение по умолчанию - чтобы проще запускать
 	
 	if (argc > 1) {
 		mode = argv[1];
@@ -139,8 +139,10 @@ int main(int argc, char* argv[]) {
 				test.run_all(test_cases[counter].info);
 			};
 		};
-	} else {
-		std::cout << "Unknown mode\n";
+	} else {		
+		//std::cout << "Unknown mode\n";
+		BinaryFileSorter b("input.bin", "output.bin");
+		b.generate_random_file(1000000);
 	};
 	
 	return 0; 
