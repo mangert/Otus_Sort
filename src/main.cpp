@@ -141,8 +141,15 @@ int main(int argc, char* argv[]) {
 		};
 	} else {		
 		//std::cout << "Unknown mode\n";
-		BinaryFileSorter b("input.bin", "output.bin");
-		b.generate_random_file(1000000);
+		BinaryFileSorter b;
+		std::string input_file = "input-radix";
+		std::string output_file = "output-radix";
+		BinaryFileSorter::generate_random_file(1000000000, input_file);
+		//BinaryFileSorter::peekBinaryFile(input_file, 50);
+		BinaryFileSorter::radix_sort(input_file, output_file, 256, true);
+		std::cout << "------------------------\n";
+		//BinaryFileSorter::peekBinaryFile(output_file, 50);
+
 	};
 	
 	return 0; 

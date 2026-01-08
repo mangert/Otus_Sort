@@ -86,7 +86,7 @@ public:
 	}
 
 	// ---------- Radix sort -----------------
-	static void radix_sort(T* data, size_t size, uint8_t base) {
+	static void radix_sort(T* data, size_t size, uint16_t base) {
 		
 		if (size < 2) return;
 
@@ -262,7 +262,7 @@ private:
 	};	
 	
 	// ---------- Служебные функции для radix sort -----------------	
-		static void counting_sort_for_radix(T* data, size_t size, uint8_t base, T exp, T offset, T* new_data) {
+		static void counting_sort_for_radix(T* data, size_t size, uint16_t base, T exp, T offset, T* new_data) {
 
 			// Счетчики
 			std::vector<size_t> counters(base, 0);
