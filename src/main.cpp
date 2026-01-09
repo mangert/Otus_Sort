@@ -144,11 +144,12 @@ int main(int argc, char* argv[]) {
 		BinaryFileSorter b;
 		std::string input_file = "input-radix";
 		std::string output_file = "output-radix";
-		BinaryFileSorter::generate_random_file(1000000000, input_file);
-		//BinaryFileSorter::peekBinaryFile(input_file, 50);
-		BinaryFileSorter::radix_sort(input_file, output_file, 256, true);
+		BinaryFileSorter::generate_random_file(1000000, input_file);
+		BinaryFileSorter::peekBinaryFile(input_file, 20);
+		BinaryFileSorter::radix_sort(input_file, output_file, 256, std::numeric_limits<uint16_t>::max()
+			,true);
 		std::cout << "------------------------\n";
-		//BinaryFileSorter::peekBinaryFile(output_file, 50);
+		BinaryFileSorter::peekBinaryFile(output_file, 20);
 
 	};
 	

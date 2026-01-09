@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include <fstream>
 #include <cstdint>
@@ -14,94 +14,56 @@ public:
     static void counting_sort(std::string& input_file, std::string& output_file,        
         uint16_t max_value = std::numeric_limits<uint16_t>::max()) {
 
-        //auto start_time = std::chrono::high_resolution_clock::now();
-
-        // Считаем частоты
-        //std::cout << "CountingSort: подсчет частот..." << std::endl;
         std::vector<uint64_t> counters(max_value + 1, 0);
 
-        {
+        { //РІ Р±Р»РѕРєРµ РёР·РѕР»РёСЂСѓРµРј СЂР°Р±РѕС‚Сѓ СЃ РІС…РѕРґРЅС‹Рј С„Р°Р№Р»РѕРј
             std::ifstream in_file(input_file, std::ios::binary);
             if (!in_file) {
-                std::cerr << "Ошибка открытия файла: " << input_file << "\n";
+                std::cerr << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°: " << input_file << "\n";
                 return;
             }
 
-            const size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
-            std::vector<char> byte_buffer(BUFFER_SIZE * 2);
-
-            //uint64_t total_numbers = 0;
+            const size_t BUFFER_SIZE = 1024 * 1024; // 1 РњР‘ С‡РёСЃРµР»
+            std::vector<char> byte_buffer(BUFFER_SIZE * 2);            
 
             while (true) {
                 in_file.read(byte_buffer.data(), byte_buffer.size());
                 size_t bytes_read = in_file.gcount();
                 if (bytes_read == 0) break;
 
-                size_t numbers_read = bytes_read / 2;
-              //total_numbers += numbers_read;
+                size_t numbers_read = bytes_read / 2;             
 
                 for (size_t i = 0; i < numbers_read; ++i) {
                     const char* byte_ptr = byte_buffer.data() + i * 2;
                     uint16_t idx = read_uint16_LE(byte_ptr);
                     ++counters[idx];
                 }
-            }
-
-            //std::cout << "  Прочитано чисел: " << total_numbers << std::endl;
+            }        
         }       
         
-        // Посчитаем ненулевые значения
-        /*uint64_t non_zero_count = 0;
-        uint64_t total_in_counters = 0;
-        for (size_t i = 0; i <= max_value; ++i) {
-            if (counters[i] > 0) {
-                non_zero_count++;
-                total_in_counters += counters[i];
-            }
-        }
-
-        std::cout << "  Ненулевых значений: " << non_zero_count
-            << " из " << (max_value + 1) << std::endl;
-        std::cout << "  Сумма в counters: " << total_in_counters << " (должно быть "
-            << total_in_counters << ")" << std::endl;
-            */
-        // Запись в выходной файл отсортированных данных
-        std::cout << "CountingSort: запись отсортированного файла..." << std::endl;
-
         std::ofstream out_file(output_file, std::ios::binary | std::ios::trunc);
         if (!out_file) {
-            std::cerr << "Ошибка создания выходного файла: " << output_file << "\n";
+            std::cerr << "РћС€РёР±РєР° СЃРѕР·РґР°РЅРёСЏ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°: " << output_file << "\n";
             return;
         }
 
-        const size_t WRITE_BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
+        const size_t WRITE_BUFFER_SIZE = 1024 * 1024; // 1 РњР‘ С‡РёСЃРµР»
         std::vector<char> write_buffer(WRITE_BUFFER_SIZE * 2);
         size_t buffer_pos = 0;
-        uint64_t numbers_written = 0;
-
-        // Прогресс-бар
-        //uint64_t values_processed = 0;
-        //const int progress_interval = std::max(1, (int)non_zero_count / 10); // 10 шагов
-
-        //std::cout << "  Прогресс: [";
+        uint64_t numbers_written = 0;        
 
         for (size_t value = 0; value <= max_value; ++value) {
             if (counters[value] == 0) continue;
-
-            //values_processed++;
-            //if (values_processed % progress_interval == 0) {
-            //    std::cout << "#" << std::flush;
-            //}
-
+        
             uint64_t count = counters[value];
 
             while (count > 0) {
                 size_t free_space = (write_buffer.size() - buffer_pos) / 2;
                 size_t to_write = std::min(static_cast<uint64_t>(free_space), count);
 
-                // Запись в буфер
+                // Р—Р°РїРёСЃСЊ РІ Р±СѓС„РµСЂ
                 for (size_t i = 0; i < to_write; ++i) {
-                    // Прямая запись в буфер
+                    // РџСЂСЏРјР°СЏ Р·Р°РїРёСЃСЊ РІ Р±СѓС„РµСЂ
                     write_buffer[buffer_pos] = static_cast<char>(value & 0xFF);
                     write_buffer[buffer_pos + 1] = static_cast<char>((value >> 8) & 0xFF);
                     buffer_pos += 2;
@@ -110,7 +72,7 @@ public:
                 count -= to_write;
                 numbers_written += to_write;
 
-                // Сброс буфера в файл
+                // РЎР±СЂРѕСЃ Р±СѓС„РµСЂР° РІ С„Р°Р№Р»
                 if (buffer_pos >= write_buffer.size()) {
                     out_file.write(write_buffer.data(), write_buffer.size());
                     buffer_pos = 0;
@@ -118,36 +80,19 @@ public:
             }
         }
 
-        //std::cout << "]" << std::endl;
-
-        // Запись остатка буфера
+        // Р—Р°РїРёСЃСЊ РѕСЃС‚Р°С‚РєР° Р±СѓС„РµСЂР°
         if (buffer_pos > 0) {
             out_file.write(write_buffer.data(), buffer_pos);
         }
 
         out_file.close();
-
-        //auto end_time = std::chrono::high_resolution_clock::now();
-        //auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-        //    end_time - start_time);
-
-        //std::cout << "CountingSort завершен за " << duration.count() / 1000.0
-        //    << " секунд" << std::endl;
-        //std::cout << "  Записано чисел: " << numbers_written << std::endl;
-        //std::cout << "  Отсортированный файл: " << output_file << std::endl;
-
-        // Быстрая проверка
-        //std::ifstream check_file(output_file, std::ios::binary | std::ios::ate);
-        //std::streamsize out_size = check_file.tellg();
-        //check_file.close();
-
-        //std::cout << "  Размер выходного файла: " << out_size << " байт ("
-        //    << (out_size / 2) << " чисел)" << std::endl;
+        
     }
     
     // ---------- Radix sort -----------------
     static void radix_sort(const std::string& input, const std::string& output,
-        uint16_t base = 256, bool debug = false) {
+        uint16_t base = 256, uint16_t max_value = std::numeric_limits<uint16_t>::max()
+        , bool debug = false) {
 
         auto total_start = std::chrono::high_resolution_clock::now();
 
@@ -155,37 +100,23 @@ public:
             std::cout << "=== RadixSort (base=" << (int)base << ") ===" << std::endl;
         }
 
-        // Проверяем существование входного файла
+        // РџСЂРѕРІРµСЂСЏРµРј СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ РІС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
         if (!std::filesystem::exists(input)) {
-            std::cerr << "Ошибка: входной файл не существует: " << input << std::endl;
+            std::cerr << "РћС€РёР±РєР°: РІС…РѕРґРЅРѕР№ С„Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚: " << input << std::endl;
             return;
         }
 
-        // Определяем размер файла
+        // РћРїСЂРµРґРµР»СЏРµРј СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°
         uint64_t file_size = std::filesystem::file_size(input);
         uint64_t total_numbers = file_size / sizeof(uint16_t);
 
         if (debug) {
-            std::cout << "  Числа в файле: " << total_numbers
-                << " (" << file_size / (1024.0 * 1024.0) << " МБ)" << std::endl;
+            std::cout << "  Р§РёСЃР»Р° РІ С„Р°Р№Р»Рµ: " << total_numbers
+                << " (" << file_size / (1024.0 * 1024.0) << " РњР‘)" << std::endl;
         }
-
-        // Находим максимальное значение (примерно)
-        uint16_t max_value = 0;
-        {
-            std::ifstream in_file(input, std::ios::binary);
-            uint16_t num;
-            // Проверяем только первые 10К чисел для скорости
-            for (uint64_t i = 0; i < std::min<uint64_t>(total_numbers, 10000); ++i) {
-                if (in_file.read(reinterpret_cast<char*>(&num), sizeof(num))) {
-                    if (num > max_value) max_value = num;
-                }
-            }
-            in_file.close();
-        }
-
-        // Вычисляем количество разрядов
-        int num_digits = 0;
+        
+        // Р’С‹С‡РёСЃР»СЏРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р·СЂСЏРґРѕРІ
+        size_t num_digits = 0;
         if (base > 0) {
             uint32_t temp = max_value;
             do {
@@ -198,38 +129,28 @@ public:
         }
 
         if (debug) {
-            std::cout << "  Максимальное значение: " << max_value
-                << ", разрядов: " << num_digits << std::endl;
-            std::cout << "  Начинаем сортировку..." << std::endl;
-        }
-
-        // Используем два файла для чередования
-        //std::string file_a = input;
-        //std::string file_b = output + ".radix_tmp";
+            std::cout << "  РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ: " << max_value
+                << ", СЂР°Р·СЂСЏРґРѕРІ: " << num_digits << std::endl;
+            std::cout << "  РќР°С‡РёРЅР°РµРј СЃРѕСЂС‚РёСЂРѕРІРєСѓ..." << std::endl;
+        }        
 
         std::string current_file = input;
-        std::string next_file = output + ".tmp";
+        std::string next_file = output + ".tmp.0";
 
-        
-        // Удаляем временный файл если существует
-        //if (std::filesystem::exists(file_b)) {
-        //    std::filesystem::remove(file_b);
-        //}
-
-        // Для каждого разряда (от младшего к старшему)
-        for (int digit = 0; digit < num_digits; ++digit) {
+        // Р”Р»СЏ РєР°Р¶РґРѕРіРѕ СЂР°Р·СЂСЏРґР° (РѕС‚ РјР»Р°РґС€РµРіРѕ Рє СЃС‚Р°СЂС€РµРјСѓ)
+        for (size_t digit = 0; digit < num_digits; ++digit) {
             if (debug) {
-                std::cout << "  Проход " << (digit + 1) << "/" << num_digits
-                    << " (разряд " << digit << ")" << std::endl;
-            }
-
+                std::cout << "  РџСЂРѕС…РѕРґ " << (digit + 1) << "/" << num_digits
+                    << " (СЂР°Р·СЂСЏРґ " << digit << ")" << std::endl;
+            }            
+             
             counting_sort_by_digit(current_file, next_file, base, digit, debug);
 
-            // Меняем местами ТОЛЬКО имена
+            // РњРµРЅСЏРµРј РјРµСЃС‚Р°РјРё РёРјРµРЅР° С„Р°Р№Р»РѕРІ
             std::swap(current_file, next_file);
 
-            // Сбрасываем next_file для следующей итерации
-            next_file = output + ".tmp" + std::to_string(digit + 1);
+            // РЎР±СЂР°СЃС‹РІР°РµРј next_file РґР»СЏ СЃР»РµРґСѓСЋС‰РµР№ РёС‚РµСЂР°С†РёРё
+            next_file = output + ".tmp." + std::to_string(digit + 1);
         }
 
         std::filesystem::remove(output);
@@ -245,9 +166,9 @@ public:
             std::filesystem::remove(current_file);
         }
 
-        // Удаляем все временные файлы
-        for (int i = 0; i <= num_digits; ++i) {
-            std::string tmp_file = output + ".tmp" + std::to_string(i);
+        // РЈРґР°Р»СЏРµРј РІСЃРµ РІСЂРµРјРµРЅРЅС‹Рµ С„Р°Р№Р»С‹
+        for (size_t i = 0; i <= num_digits; ++i) {
+            std::string tmp_file = output + ".tmp." + std::to_string(i);
             if (std::filesystem::exists(tmp_file)) {
                 std::filesystem::remove(tmp_file);
             }
@@ -259,32 +180,32 @@ public:
 
         if (debug) {
             std::cout << "========================================" << std::endl;
-            std::cout << "RadixSort завершен!" << std::endl;
-            std::cout << "  Общее время: " << total_duration.count() / 1000.0
-                << " секунд" << std::endl;
-            std::cout << "  Выходной файл: " << output << std::endl;
+            std::cout << "RadixSort Р·Р°РІРµСЂС€РµРЅ!" << std::endl;
+            std::cout << "  РћР±С‰РµРµ РІСЂРµРјСЏ: " << total_duration.count() / 1000.0
+                << " СЃРµРєСѓРЅРґ" << std::endl;
+            std::cout << "  Р’С‹С…РѕРґРЅРѕР№ С„Р°Р№Р»: " << output << std::endl;
 
-            // Проверяем размер выходного файла
+            // РџСЂРѕРІРµСЂСЏРµРј СЂР°Р·РјРµСЂ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
             if (std::filesystem::exists(output)) {
                 uint64_t out_size = std::filesystem::file_size(output);
-                std::cout << "  Размер выходного файла: "
-                    << out_size << " байт ("
-                    << out_size / sizeof(uint16_t) << " чисел)" << std::endl;
+                std::cout << "  Р Р°Р·РјРµСЂ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°: "
+                    << out_size << " Р±Р°Р№С‚ ("
+                    << out_size / sizeof(uint16_t) << " С‡РёСЃРµР»)" << std::endl;
             }
         }
     }
     
-    // ---------- Генерация бинарного файла со случайными 16-битными числами
-    // Формат файла: little-endian (младший байт первый)
+    // ---------- Р“РµРЅРµСЂР°С†РёСЏ Р±РёРЅР°СЂРЅРѕРіРѕ С„Р°Р№Р»Р° СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹РјРё 16-Р±РёС‚РЅС‹РјРё С‡РёСЃР»Р°РјРё
+    // Р¤РѕСЂРјР°С‚ С„Р°Р№Р»Р°: little-endian (РјР»Р°РґС€РёР№ Р±Р°Р№С‚ РїРµСЂРІС‹Р№)
     static void generate_random_file(uint64_t n, std::string& filename) {
 
-        std::cout << "Генерация файла с " << n << " числами ("
-            << (n * 2) / (1024.0 * 1024.0) << " МБ)...\n";
+        std::cout << "Р“РµРЅРµСЂР°С†РёСЏ С„Р°Р№Р»Р° СЃ " << n << " С‡РёСЃР»Р°РјРё ("
+            << (n * 2) / (1024.0 * 1024.0) << " РњР‘)...\n";
 
 
         std::ofstream file(filename, std::ios::binary | std::ios::trunc);
         if (!file) {
-            std::cerr << "Ошибка открытия файла\n";
+            std::cerr << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n";
             return;
         }
 
@@ -306,14 +227,14 @@ public:
                 buffer[i] = distrib(gen);
             }
 
-            // Сериализация каждого числа
+            // РЎРµСЂРёР°Р»РёР·Р°С†РёСЏ РєР°Р¶РґРѕРіРѕ С‡РёСЃР»Р°
             for (size_t i = 0; i < block_size; ++i) {
-                // Разбиваем 16-битное число на 2 байта и записываем в файл
+                // Р Р°Р·Р±РёРІР°РµРј 16-Р±РёС‚РЅРѕРµ С‡РёСЃР»Рѕ РЅР° 2 Р±Р°Р№С‚Р° Рё Р·Р°РїРёСЃС‹РІР°РµРј РІ С„Р°Р№Р»
                 write_uint16_LE(file, buffer[i]);                
             }
 
             if (!file) {
-                std::cerr << "Ошибка записи!\n";
+                std::cerr << "РћС€РёР±РєР° Р·Р°РїРёСЃРё!\n";
                 return;
             }
 
@@ -321,11 +242,11 @@ public:
         }
     };
 
-    // Минимальная версия для быстрой проверки - убрать!!!
+    // РњРёРЅРёРјР°Р»СЊРЅР°СЏ РІРµСЂСЃРёСЏ РґР»СЏ Р±С‹СЃС‚СЂРѕР№ РїСЂРѕРІРµСЂРєРё - СѓР±СЂР°С‚СЊ!!!
     static void peekBinaryFile(const std::string& filename, int n = 20) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) {
-            std::cerr << "Не могу открыть " << filename << std::endl;
+            std::cerr << "РќРµ РјРѕРіСѓ РѕС‚РєСЂС‹С‚СЊ " << filename << std::endl;
             return;
         }
         std::cout << filename << ": ";
@@ -339,17 +260,17 @@ public:
     }
 private:
 
-    //хелперы для чтения-записи
-    //собираем байты в число
+    //С…РµР»РїРµСЂС‹ РґР»СЏ С‡С‚РµРЅРёСЏ-Р·Р°РїРёСЃРё
+    //СЃРѕР±РёСЂР°РµРј Р±Р°Р№С‚С‹ РІ С‡РёСЃР»Рѕ
     static inline uint16_t read_uint16_LE(const char* bytes) {
-        // Little Endian: младший байт первый
+        // Little Endian: РјР»Р°РґС€РёР№ Р±Р°Р№С‚ РїРµСЂРІС‹Р№
         return static_cast<uint16_t>(
             static_cast<uint8_t>(bytes[0]) |
             (static_cast<uint8_t>(bytes[1]) << 8)
             );
     }
 
-    //записываем число в буфер как 2 байта
+    //Р·Р°РїРёСЃС‹РІР°РµРј С‡РёСЃР»Рѕ РІ Р±СѓС„РµСЂ РєР°Рє 2 Р±Р°Р№С‚Р°
     static inline void write_uint16_LE(std::ostream& stream, uint16_t value) {
         char bytes[2];
         bytes[0] = static_cast<char>(value & 0xFF);
@@ -357,41 +278,40 @@ private:
         stream.write(bytes, 2);
     }
 
-
-    //сериализуем число в байты
+    //СЃРµСЂРёР°Р»РёР·СѓРµРј С‡РёСЃР»Рѕ РІ Р±Р°Р№С‚С‹
     static inline void uint16_to_bytes_LE(char* bytes, uint16_t value) {
-        // Little Endian: младший байт первый
+        // Little Endian: РјР»Р°РґС€РёР№ Р±Р°Р№С‚ РїРµСЂРІС‹Р№
         bytes[0] = static_cast<char>(value & 0xFF);
         bytes[1] = static_cast<char>((value >> 8) & 0xFF);
     }
 
-    //----------вспомогательные функции для Radix Sort -----
-    //Получение digit-го разряда числа в системе base
+    //----------РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ Radix Sort -----
+    //РџРѕР»СѓС‡РµРЅРёРµ digit-РіРѕ СЂР°Р·СЂСЏРґР° С‡РёСЃР»Р° РІ СЃРёСЃС‚РµРјРµ base
     static inline uint8_t get_digit(uint16_t number, int digit, uint16_t base) {
         if (base == 0) return 0;
         uint32_t divisor = 1;
         for (int i = 0; i < digit; ++i) {
             divisor *= base;
-            if (divisor == 0) return 0; // Защита от переполнения
+            if (divisor == 0) return 0; // Р—Р°С‰РёС‚Р° РѕС‚ РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ
         }
         return (number / divisor) % base;
     }
 
-    // Стабильная сортировка подсчетом по одному разряду
+    // РЎС‚Р°Р±РёР»СЊРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕРґСЃС‡РµС‚РѕРј РїРѕ РѕРґРЅРѕРјСѓ СЂР°Р·СЂСЏРґСѓ
     static void counting_sort_by_digit(const std::string& input, const std::string& output,
-        uint16_t base, int digit, bool debug = false) {
+        uint16_t base, int digit, bool debug = true) {
 
         auto start_time = std::chrono::high_resolution_clock::now();
 
         if (debug) {
-            std::cout << "    CountingSort: разряд " << digit
-                << " (base=" << (int)base << ")" << std::endl;
+            std::cout << "    CountingSort: СЂР°Р·СЂСЏРґ " << digit
+                << " (base=" << base << ")" << std::endl;
         }
 
-        // 1. Определяем размер файла
+        // 1. РћРїСЂРµРґРµР»СЏРµРј СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°
         std::ifstream in_file(input, std::ios::binary | std::ios::ate);
         if (!in_file) {
-            std::cerr << "Ошибка открытия файла: " << input << std::endl;
+            std::cerr << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°: " << input << std::endl;
             return;
         }
 
@@ -400,111 +320,161 @@ private:
         in_file.close();
 
         if (total_numbers == 0) {
-            // Пустой файл - просто копируем
+            // РџСѓСЃС‚РѕР№ С„Р°Р№Р»
             std::ofstream out_file(output, std::ios::binary);
             out_file.close();
             return;
         }
 
-        // 2. Подсчет частот для текущего разряда
+        // 2. РџРѕРґСЃС‡РµС‚ С‡Р°СЃС‚РѕС‚ РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СЂР°Р·СЂСЏРґР°
         std::vector<uint64_t> counters(base, 0);
 
         in_file.open(input, std::ios::binary);
         if (!in_file) {
-            std::cerr << "Ошибка открытия файла: " << input << std::endl;
+            std::cerr << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°: " << input << std::endl;
             return;
         }
 
-        // Буферизованное чтение для подсчета
-        const size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
-        std::vector<uint16_t> buffer(BUFFER_SIZE);
+        // Р‘СѓС„РµСЂРёР·РѕРІР°РЅРЅРѕРµ С‡С‚РµРЅРёРµ РґР»СЏ РїРѕРґСЃС‡РµС‚Р°
+        const size_t BUFFER_SIZE = 1024 * 1024; // 1 РњР‘ С‡РёСЃРµР»
+        const size_t BYTE_BUFFER_SIZE = BUFFER_SIZE * sizeof(uint16_t);
+        std::vector<char> byte_buffer(BYTE_BUFFER_SIZE);
 
         uint64_t numbers_processed = 0;
 
         while (true) {
-            in_file.read(reinterpret_cast<char*>(buffer.data()),
-                BUFFER_SIZE * sizeof(uint16_t));
-            size_t numbers_read = in_file.gcount() / sizeof(uint16_t);
+            in_file.read(byte_buffer.data(), byte_buffer.size());
+            size_t bytes_read = in_file.gcount();
 
-            if (numbers_read == 0) break;
+            if (bytes_read == 0) break;
+
+            size_t numbers_read = bytes_read / sizeof(uint16_t);
 
             for (size_t i = 0; i < numbers_read; ++i) {
-                uint8_t digit_value = get_digit(buffer[i], digit, base);
+                const char* byte_ptr = byte_buffer.data() + i * sizeof(uint16_t);
+                uint16_t num = read_uint16_LE(byte_ptr);
+                uint8_t digit_value = get_digit(num, digit, base);
                 ++counters[digit_value];
             }
 
             numbers_processed += numbers_read;
 
             if (debug && numbers_processed % (10 * 1024 * 1024) == 0) {
-                std::cout << "      Подсчет: " << numbers_processed / 1000000
-                    << " млн чисел..." << std::endl;
+                std::cout << "      РџРѕРґСЃС‡РµС‚: " << numbers_processed / 1000000
+                    << " РјР»РЅ С‡РёСЃРµР»..." << std::endl;
             }
         }
         in_file.close();
 
-        // 3. Префиксные суммы (позиции для записи)
-        std::vector<uint64_t> positions(base, 0);
-        if (base > 0) {
-            positions[0] = 0;
-            for (size_t i = 1; i < base; ++i) {
-                positions[i] = positions[i - 1] + counters[i - 1];
-            }
-        }
-
-        // 4. Второй проход: распределение чисел
+        // 3. РџСЂРµС„РёРєСЃРЅС‹Рµ СЃСѓРјРјС‹        
+        std::partial_sum(counters.begin(), counters.end(), counters.begin());
+        
+        // 4. Р’С‚РѕСЂРѕР№ РїСЂРѕС…РѕРґ: СЂР°СЃРїСЂРµРґРµР»РµРЅРёРµ С‡РёСЃРµР»
         in_file.open(input, std::ios::binary);
         std::ofstream out_file(output, std::ios::binary | std::ios::trunc);
 
         if (!out_file) {
-            std::cerr << "Ошибка создания файла: " << output << std::endl;
+            std::cerr << "РћС€РёР±РєР° СЃРѕР·РґР°РЅРёСЏ С„Р°Р№Р»Р°: " << output << std::endl;
             return;
         }
-
-        // Создаем выходной файл нужного размера
+        // РЎРѕР·РґР°РµРј РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р» РЅСѓР¶РЅРѕРіРѕ СЂР°Р·РјРµСЂР°
         out_file.seekp(file_size - 1);
         out_file.write("", 1);
         out_file.close();
 
-        // Открываем для произвольного доступа
-        std::fstream out_file_rw(output,
-            std::ios::binary | std::ios::in | std::ios::out);
+        std::fstream out_file_rw(output, std::ios::binary | std::ios::in | std::ios::out);
 
-        // Создаем текущие позиции для записи (копия positions)
-        std::vector<uint64_t> write_positions = positions;
+        // РџРѕР·РёС†РёРё РґР»СЏ Р·Р°РїРёСЃРё СЃ РєРѕРЅС†Р° (РєРѕРїРёСЂСѓРµРј counters)
+        std::vector<uint64_t> write_positions = counters;
 
-        // Буферизованное чтение и запись
-        numbers_processed = 0;
-
-        while (true) {
-            in_file.read(reinterpret_cast<char*>(buffer.data()),
-                BUFFER_SIZE * sizeof(uint16_t));
-            size_t numbers_read = in_file.gcount() / sizeof(uint16_t);
-
-            if (numbers_read == 0) break;
-
-            // Обрабатываем каждое число из буфера
-            for (size_t i = 0; i < numbers_read; ++i) {
-                uint16_t num = buffer[i];
-                uint8_t digit_value = get_digit(num, digit, base);
-
-                // Находим позицию для записи
-                uint64_t pos = write_positions[digit_value]++;
-                uint64_t byte_pos = pos * sizeof(uint16_t);
-
-                // Записываем число в нужную позицию
-                out_file_rw.seekp(byte_pos);
-                out_file_rw.write(reinterpret_cast<const char*>(&num), sizeof(num));
-            }
-
-            numbers_processed += numbers_read;
-
-            if (debug && numbers_processed % (10 * 1024 * 1024) == 0) {
-                std::cout << "      Распределение: " << numbers_processed / 1000000
-                    << " млн чисел..." << std::endl;
-            }
+        // Р§РёС‚Р°РµРј С„Р°Р№Р» Р±СѓС„РµСЂР°РјРё c РєРѕРЅС†Р°
+        std::ifstream in_file_second_pass(input, std::ios::binary);
+        if (!in_file_second_pass) {
+            std::cerr << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° РґР»СЏ РІС‚РѕСЂРѕРіРѕ РїСЂРѕС…РѕРґР°: " << input << std::endl;
+            return;
         }
 
-        in_file.close();
+        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ РєРѕРЅРµС† Рё СЃР±СЂР°СЃС‹РІР°РµРј С„Р»Р°РіРё
+        in_file_second_pass.seekg(0, std::ios::end);
+        in_file_second_pass.clear();  //СЃР±СЂР°СЃС‹РІР°РµРј С„Р»Р°РіРё eof/fail!
+
+        uint64_t remaining_numbers = total_numbers;
+        // РР·РјРµРЅРёС‚Рµ С‚РёРї Р±СѓС„РµСЂР° РЅР° char
+        const size_t BUFFER_BYTES = 1024 * 1024 * sizeof(uint16_t); // 2 РњР‘
+        std::vector<char> _byte_buffer(BUFFER_BYTES);
+
+        std::cout << "=== РћРўР›РђР”РљРђ ===" << std::endl;
+        std::cout << "total_numbers: " << total_numbers << std::endl;
+        std::cout << "remaining_numbers РїРµСЂРµРґ С†РёРєР»РѕРј: " << remaining_numbers << std::endl;
+        
+        // РџСЂРѕРІРµСЂСЏРµРј РїРѕР·РёС†РёСЋ РІ С„Р°Р№Р»Рµ
+        std::streampos pos = in_file_second_pass.tellg();
+        std::cout << "РџРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ РїРѕСЃР»Рµ seekg: " << pos << std::endl;
+
+        // РџСЂРѕРІРµСЂСЏРµРј С„Р»Р°РіРё С„Р°Р№Р»Р°
+        std::cout << "Р¤Р»Р°РіРё С„Р°Р№Р»Р°: good=" << in_file.good()
+            << " eof=" << in_file.eof()
+            << " fail=" << in_file.fail()
+            << " bad=" << in_file.bad() << std::endl;
+
+
+        while (remaining_numbers > 0) {
+            // РЎРєРѕР»СЊРєРѕ Р±Р°Р№С‚ С‡РёС‚Р°С‚СЊ
+            size_t bytes_to_read = std::min(
+                BUFFER_BYTES,
+                remaining_numbers * sizeof(uint16_t)
+            );
+            size_t elements_to_read = bytes_to_read / sizeof(uint16_t);
+
+            // РџРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ
+            uint64_t block_start_byte = (remaining_numbers - elements_to_read) * sizeof(uint16_t);
+
+            // РСЃРїРѕР»СЊР·СѓРµРј РџР РђР’РР›Р¬РќР«Р™ РїРѕС‚РѕРє!
+            in_file_second_pass.seekg(block_start_byte);  // в†ђ Р’РўРћР РћР™ РџРђРЎРЎ!
+            in_file_second_pass.clear(); // Р’Р°Р¶РЅРѕ!
+
+            std::cout << "to_read: " << bytes_to_read << std::endl;
+            std::cout << "block_start_byte: " << block_start_byte << std::endl;
+
+            // Р§РёС‚Р°РµРј Р±Р°Р№С‚С‹ РёР· РџР РђР’РР›Р¬РќРћР“Рћ РїРѕС‚РѕРєР°!
+            in_file_second_pass.read(_byte_buffer.data(), bytes_to_read);
+            size_t bytes_read = in_file_second_pass.gcount();  // в†ђ РўРћРў Р–Р• РџРћРўРћРљ!
+            size_t elements_read = bytes_read / sizeof(uint16_t);
+
+            std::cout << "bytes_read: " << bytes_read << std::endl;
+            std::cout << "Р¤Р»Р°РіРё РїРѕСЃР»Рµ С‡С‚РµРЅРёСЏ: good=" << in_file_second_pass.good()  // в†ђ Р’РўРћР РћР™ РџРђРЎРЎ!
+                << " eof=" << in_file_second_pass.eof()
+                << " fail=" << in_file_second_pass.fail()
+                << " bad=" << in_file_second_pass.bad() << std::endl;
+
+            // РџСЂРѕРІРµСЂСЏРµРј РїРµСЂРІС‹Рµ РЅРµСЃРєРѕР»СЊРєРѕ РїСЂРѕС‡РёС‚Р°РЅРЅС‹С… С‡РёСЃРµР»
+            std::cout << "РџРµСЂРІС‹Рµ 5 С‡РёСЃРµР» РІ buffer: ";
+            for (int k = 0; k < std::min(5, (int)elements_to_read); ++k) {
+                const char* byte_ptr = _byte_buffer.data() + k * sizeof(uint16_t);
+                uint16_t num = read_uint16_LE(byte_ptr);  // в†ђ Р§РёС‚Р°РµРј РєР°Рє С‡РёСЃР»Рѕ!
+                std::cout << num << " ";
+            }
+            std::cout << std::endl;
+
+            if (elements_read == 0) break;
+
+            // РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ
+            for (int64_t i = elements_read - 1; i >= 0; --i) {
+                const char* byte_ptr = _byte_buffer.data() + i * sizeof(uint16_t);
+                uint16_t num = read_uint16_LE(byte_ptr);
+                uint8_t digit_value = get_digit(num, digit, base);
+
+                uint64_t pos = --write_positions[digit_value];
+                uint64_t byte_pos = pos * sizeof(uint16_t);
+
+                out_file_rw.seekp(byte_pos);
+                write_uint16_LE(out_file_rw, num);
+            }
+
+            remaining_numbers -= elements_read;
+        }
+
+        in_file_second_pass.close();
         out_file_rw.close();
 
         auto end_time = std::chrono::high_resolution_clock::now();
@@ -512,8 +482,8 @@ private:
             end_time - start_time);
 
         if (debug) {
-            std::cout << "    Завершено за " << duration.count() / 1000.0
-                << " сек, чисел: " << total_numbers << std::endl;
+            std::cout << "    Р—Р°РІРµСЂС€РµРЅРѕ Р·Р° " << duration.count() / 1000.0
+                << " СЃРµРє, С‡РёСЃРµР»: " << total_numbers << std::endl;
         }
     }
 
