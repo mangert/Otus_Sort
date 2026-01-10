@@ -91,14 +91,13 @@ public:
     
     // ---------- Radix sort -----------------
     static void radix_sort(const std::string& input, const std::string& output,
-        uint16_t base = 256, uint16_t max_value = std::numeric_limits<uint16_t>::max()
-        , bool debug = false) {
+        uint16_t base = 256, uint16_t max_value = std::numeric_limits<uint16_t>::max()) {
 
-        auto total_start = std::chrono::high_resolution_clock::now();
+        //auto total_start = std::chrono::high_resolution_clock::now();
 
-        if (debug) {
-            std::cout << "=== RadixSort (base=" << (int)base << ") ===" << std::endl;
-        }
+        //if (debug) {
+        //    std::cout << "=== RadixSort (base=" << (int)base << ") ===" << std::endl;
+        //}
 
         // Проверяем существование входного файла
         if (!std::filesystem::exists(input)) {
@@ -110,11 +109,11 @@ public:
         uint64_t file_size = std::filesystem::file_size(input);
         uint64_t total_numbers = file_size / sizeof(uint16_t);
 
-        if (debug) {
+        /*if (debug) {
             std::cout << "  Числа в файле: " << total_numbers
                 << " (" << file_size / (1024.0 * 1024.0) << " МБ)" << std::endl;
         }
-        
+        */
         // Вычисляем количество разрядов
         size_t num_digits = 0;
         if (base > 0) {
@@ -128,23 +127,23 @@ public:
             num_digits = 1;
         }
 
-        if (debug) {
+        /*if (debug) {
             std::cout << "  Максимальное значение: " << max_value
                 << ", разрядов: " << num_digits << std::endl;
             std::cout << "  Начинаем сортировку..." << std::endl;
-        }        
+        }*/        
 
         std::string current_file = input;
         std::string next_file = output + ".tmp.0";
 
         // Для каждого разряда (от младшего к старшему)
         for (size_t digit = 0; digit < num_digits; ++digit) {
-            if (debug) {
+        /*    if (debug) {
                 std::cout << "  Проход " << (digit + 1) << "/" << num_digits
                     << " (разряд " << digit << ")" << std::endl;
             }            
-             
-            counting_sort_by_digit(current_file, next_file, base, digit, debug);
+        */     
+            counting_sort_by_digit(current_file, next_file, base, digit);
 
             // Меняем местами имена файлов
             std::swap(current_file, next_file);
@@ -174,25 +173,25 @@ public:
             }
         }
 
-        auto total_end = std::chrono::high_resolution_clock::now();
-        auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            total_end - total_start);
+        //auto total_end = std::chrono::high_resolution_clock::now();
+        //auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+        //    total_end - total_start);
 
-        if (debug) {
-            std::cout << "========================================" << std::endl;
-            std::cout << "RadixSort завершен!" << std::endl;
-            std::cout << "  Общее время: " << total_duration.count() / 1000.0
-                << " секунд" << std::endl;
-            std::cout << "  Выходной файл: " << output << std::endl;
+        //if (debug) {
+        //    std::cout << "========================================" << std::endl;
+        //    std::cout << "RadixSort завершен!" << std::endl;
+        //    std::cout << "  Общее время: " << total_duration.count() / 1000.0
+        //        << " секунд" << std::endl;
+        //    std::cout << "  Выходной файл: " << output << std::endl;
 
-            // Проверяем размер выходного файла
-            if (std::filesystem::exists(output)) {
-                uint64_t out_size = std::filesystem::file_size(output);
-                std::cout << "  Размер выходного файла: "
-                    << out_size << " байт ("
-                    << out_size / sizeof(uint16_t) << " чисел)" << std::endl;
-            }
-        }
+        //    // Проверяем размер выходного файла
+        //    if (std::filesystem::exists(output)) {
+        //        uint64_t out_size = std::filesystem::file_size(output);
+        //        std::cout << "  Размер выходного файла: "
+        //            << out_size << " байт ("
+        //            << out_size / sizeof(uint16_t) << " чисел)" << std::endl;
+        //    }
+        //}
     }
     
     // ---------- Генерация бинарного файла со случайными 16-битными числами
@@ -290,7 +289,7 @@ private:
     static inline uint8_t get_digit(uint16_t number, int digit, uint16_t base) {
         if (base == 0) return 0;
         uint32_t divisor = 1;
-        for (int i = 0; i < digit; ++i) {
+        for (size_t i = 0; i < digit; ++i) {
             divisor *= base;
             if (divisor == 0) return 0; // Защита от переполнения
         }
@@ -299,14 +298,14 @@ private:
 
     // Стабильная сортировка подсчетом по одному разряду
     static void counting_sort_by_digit(const std::string& input, const std::string& output,
-        uint16_t base, int digit, bool debug = true) {
+        uint16_t base, int digit) {
 
-        auto start_time = std::chrono::high_resolution_clock::now();
+        /*auto start_time = std::chrono::high_resolution_clock::now();
 
         if (debug) {
             std::cout << "    CountingSort: разряд " << digit
                 << " (base=" << base << ")" << std::endl;
-        }
+        }*/
 
         // 1. Определяем размер файла
         std::ifstream in_file(input, std::ios::binary | std::ios::ate);
@@ -336,11 +335,11 @@ private:
         }
 
         // Буферизованное чтение для подсчета
-        const size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
-        const size_t BYTE_BUFFER_SIZE = BUFFER_SIZE * sizeof(uint16_t);
+        constexpr size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
+        constexpr size_t BYTE_BUFFER_SIZE = BUFFER_SIZE * sizeof(uint16_t);
         std::vector<char> byte_buffer(BYTE_BUFFER_SIZE);
 
-        uint64_t numbers_processed = 0;
+        //uint64_t numbers_processed = 0;
 
         while (true) {
             in_file.read(byte_buffer.data(), byte_buffer.size());
@@ -357,12 +356,12 @@ private:
                 ++counters[digit_value];
             }
 
-            numbers_processed += numbers_read;
+            //numbers_processed += numbers_read;
 
-            if (debug && numbers_processed % (10 * 1024 * 1024) == 0) {
+            /*if (debug && numbers_processed % (10 * 1024 * 1024) == 0) {
                 std::cout << "      Подсчет: " << numbers_processed / 1000000
                     << " млн чисел..." << std::endl;
-            }
+            }*/
         }
         in_file.close();
 
@@ -396,26 +395,25 @@ private:
 
         // Устанавливаем в конец и сбрасываем флаги
         in_file_second_pass.seekg(0, std::ios::end);
-        in_file_second_pass.clear();  //сбрасываем флаги eof/fail!
+        in_file_second_pass.clear();  //сбрасываем флаги eof/fail
 
-        uint64_t remaining_numbers = total_numbers;
-        // Измените тип буфера на char
-        const size_t BUFFER_BYTES = 1024 * 1024 * sizeof(uint16_t); // 2 МБ
+        uint64_t remaining_numbers = total_numbers;        
+        constexpr size_t BUFFER_BYTES = 1024 * 1024 * sizeof(uint16_t); // 2 МБ
         std::vector<char> _byte_buffer(BUFFER_BYTES);
 
-        std::cout << "=== ОТЛАДКА ===" << std::endl;
+        /*std::cout << "=== ОТЛАДКА ===" << std::endl;
         std::cout << "total_numbers: " << total_numbers << std::endl;
-        std::cout << "remaining_numbers перед циклом: " << remaining_numbers << std::endl;
+        std::cout << "remaining_numbers перед циклом: " << remaining_numbers << std::endl;*/
         
         // Проверяем позицию в файле
         std::streampos pos = in_file_second_pass.tellg();
-        std::cout << "Позиция в файле после seekg: " << pos << std::endl;
+        //std::cout << "Позиция в файле после seekg: " << pos << std::endl;
 
         // Проверяем флаги файла
-        std::cout << "Флаги файла: good=" << in_file.good()
+        /*std::cout << "Флаги файла: good=" << in_file.good()
             << " eof=" << in_file.eof()
             << " fail=" << in_file.fail()
-            << " bad=" << in_file.bad() << std::endl;
+            << " bad=" << in_file.bad() << std::endl;*/
 
 
         while (remaining_numbers > 0) {
@@ -428,33 +426,32 @@ private:
 
             // Позиция в файле
             uint64_t block_start_byte = (remaining_numbers - elements_to_read) * sizeof(uint16_t);
+            
+            in_file_second_pass.seekg(block_start_byte);  
+            in_file_second_pass.clear(); // c,
 
-            // Используем ПРАВИЛЬНЫЙ поток!
-            in_file_second_pass.seekg(block_start_byte);  // ← ВТОРОЙ ПАСС!
-            in_file_second_pass.clear(); // Важно!
+            //std::cout << "to_read: " << bytes_to_read << std::endl;
+            //std::cout << "block_start_byte: " << block_start_byte << std::endl;
 
-            std::cout << "to_read: " << bytes_to_read << std::endl;
-            std::cout << "block_start_byte: " << block_start_byte << std::endl;
-
-            // Читаем байты из ПРАВИЛЬНОГО потока!
+            // Читаем байты из потока
             in_file_second_pass.read(_byte_buffer.data(), bytes_to_read);
-            size_t bytes_read = in_file_second_pass.gcount();  // ← ТОТ ЖЕ ПОТОК!
+            size_t bytes_read = in_file_second_pass.gcount();  
             size_t elements_read = bytes_read / sizeof(uint16_t);
 
-            std::cout << "bytes_read: " << bytes_read << std::endl;
-            std::cout << "Флаги после чтения: good=" << in_file_second_pass.good()  // ← ВТОРОЙ ПАСС!
-                << " eof=" << in_file_second_pass.eof()
-                << " fail=" << in_file_second_pass.fail()
-                << " bad=" << in_file_second_pass.bad() << std::endl;
+            //std::cout << "bytes_read: " << bytes_read << std::endl;
+            //std::cout << "Флаги после чтения: good=" << in_file_second_pass.good()  // ← ВТОРОЙ ПАСС!
+            //    << " eof=" << in_file_second_pass.eof()
+            //    << " fail=" << in_file_second_pass.fail()
+            //    << " bad=" << in_file_second_pass.bad() << std::endl;
 
             // Проверяем первые несколько прочитанных чисел
-            std::cout << "Первые 5 чисел в buffer: ";
-            for (int k = 0; k < std::min(5, (int)elements_to_read); ++k) {
-                const char* byte_ptr = _byte_buffer.data() + k * sizeof(uint16_t);
-                uint16_t num = read_uint16_LE(byte_ptr);  // ← Читаем как число!
-                std::cout << num << " ";
-            }
-            std::cout << std::endl;
+            //std::cout << "Первые 5 чисел в buffer: ";
+            //for (int k = 0; k < std::min(5, (int)elements_to_read); ++k) {
+            //    const char* byte_ptr = _byte_buffer.data() + k * sizeof(uint16_t);
+            //    uint16_t num = read_uint16_LE(byte_ptr);  // читаем как число
+            //    std::cout << num << " ";
+            //}
+            //std::cout << std::endl;
 
             if (elements_read == 0) break;
 
@@ -477,14 +474,14 @@ private:
         in_file_second_pass.close();
         out_file_rw.close();
 
-        auto end_time = std::chrono::high_resolution_clock::now();
+        /*auto end_time = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             end_time - start_time);
 
         if (debug) {
             std::cout << "    Завершено за " << duration.count() / 1000.0
                 << " сек, чисел: " << total_numbers << std::endl;
-        }
+        }*/
     }
 
 };
