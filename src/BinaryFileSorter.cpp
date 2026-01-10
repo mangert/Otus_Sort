@@ -6,6 +6,7 @@
 #include <string>
 #include <numeric>
 #include <chrono>
+#include "Sorter.h"
 
 class BinaryFileSorter {
 
@@ -23,7 +24,7 @@ public:
                 return;
             }
 
-            const size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
+            constexpr size_t BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
             std::vector<char> byte_buffer(BUFFER_SIZE * 2);            
 
             while (true) {
@@ -47,7 +48,7 @@ public:
             return;
         }
 
-        const size_t WRITE_BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
+        constexpr size_t WRITE_BUFFER_SIZE = 1024 * 1024; // 1 МБ чисел
         std::vector<char> write_buffer(WRITE_BUFFER_SIZE * 2);
         size_t buffer_pos = 0;
         uint64_t numbers_written = 0;        
@@ -92,28 +93,13 @@ public:
     // ---------- Radix sort -----------------
     static void radix_sort(const std::string& input, const std::string& output,
         uint16_t base = 256, uint16_t max_value = std::numeric_limits<uint16_t>::max()) {
-
-        //auto total_start = std::chrono::high_resolution_clock::now();
-
-        //if (debug) {
-        //    std::cout << "=== RadixSort (base=" << (int)base << ") ===" << std::endl;
-        //}
-
+        
         // Проверяем существование входного файла
         if (!std::filesystem::exists(input)) {
             std::cerr << "Ошибка: входной файл не существует: " << input << std::endl;
             return;
-        }
-
-        // Определяем размер файла
-        uint64_t file_size = std::filesystem::file_size(input);
-        uint64_t total_numbers = file_size / sizeof(uint16_t);
-
-        /*if (debug) {
-            std::cout << "  Числа в файле: " << total_numbers
-                << " (" << file_size / (1024.0 * 1024.0) << " МБ)" << std::endl;
-        }
-        */
+        }        
+        
         // Вычисляем количество разрядов
         size_t num_digits = 0;
         if (base > 0) {
@@ -127,22 +113,12 @@ public:
             num_digits = 1;
         }
 
-        /*if (debug) {
-            std::cout << "  Максимальное значение: " << max_value
-                << ", разрядов: " << num_digits << std::endl;
-            std::cout << "  Начинаем сортировку..." << std::endl;
-        }*/        
-
         std::string current_file = input;
         std::string next_file = output + ".tmp.0";
 
         // Для каждого разряда (от младшего к старшему)
-        for (size_t digit = 0; digit < num_digits; ++digit) {
-        /*    if (debug) {
-                std::cout << "  Проход " << (digit + 1) << "/" << num_digits
-                    << " (разряд " << digit << ")" << std::endl;
-            }            
-        */     
+        for (size_t digit = 0; digit < num_digits; ++digit) {             
+            
             counting_sort_by_digit(current_file, next_file, base, digit);
 
             // Меняем местами имена файлов
@@ -172,26 +148,163 @@ public:
                 std::filesystem::remove(tmp_file);
             }
         }
+    }
 
-        //auto total_end = std::chrono::high_resolution_clock::now();
-        //auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-        //    total_end - total_start);
+    // ---------- Bucket sort -----------------
+    static void bucket_sort(std::string& input_file, std::string& output_file,
+        uint16_t max_value = std::numeric_limits<uint16_t>::max(),
+        size_t bucket_count = 256) {
 
-        //if (debug) {
-        //    std::cout << "========================================" << std::endl;
-        //    std::cout << "RadixSort завершен!" << std::endl;
-        //    std::cout << "  Общее время: " << total_duration.count() / 1000.0
-        //        << " секунд" << std::endl;
-        //    std::cout << "  Выходной файл: " << output << std::endl;
+        auto start_time = std::chrono::high_resolution_clock::now();
 
-        //    // Проверяем размер выходного файла
-        //    if (std::filesystem::exists(output)) {
-        //        uint64_t out_size = std::filesystem::file_size(output);
-        //        std::cout << "  Размер выходного файла: "
-        //            << out_size << " байт ("
-        //            << out_size / sizeof(uint16_t) << " чисел)" << std::endl;
-        //    }
-        //}
+        // 1. Не открываем все файлы сразу - только имена
+        std::vector<std::string> filenames(bucket_count);
+        for (size_t i = 0; i < bucket_count; ++i) {
+            filenames[i] = output_file + "_b" + std::to_string(i) + ".tmp";
+        }
+
+        // 2. Распределение с открытием файлов по мере необходимости
+        {
+            std::ifstream in_file(input_file, std::ios::binary);
+            if (!in_file) {
+                std::cerr << "Ошибка открытия входного файла" << std::endl;
+                return;
+            }
+
+            constexpr size_t BUFFER_SIZE = 1024 * 1024;
+            std::vector<char> byte_buffer(BUFFER_SIZE * 2);
+
+            // Вектор для отслеживания открытых файлов
+            std::vector<std::unique_ptr<std::ofstream>> bucket_files(bucket_count);
+
+            uint64_t numbers_processed = 0;
+            constexpr size_t FLUSH_INTERVAL = 10000; // Закрываем файлы периодически
+
+            while (true) {
+                in_file.read(byte_buffer.data(), byte_buffer.size());
+                size_t bytes_read = in_file.gcount();
+                if (bytes_read == 0) break;
+
+                size_t numbers_read = bytes_read / 2;
+
+                for (size_t i = 0; i < numbers_read; ++i) {
+                    const char* byte_ptr = byte_buffer.data() + i * 2;
+                    uint16_t number = read_uint16_LE(byte_ptr);
+                    size_t bucket_idx = get_bucket_index(number, max_value, bucket_count);
+
+                    // Открываем файл если нужно
+                    if (!bucket_files[bucket_idx]) {
+                        bucket_files[bucket_idx] = std::make_unique<std::ofstream>(
+                            filenames[bucket_idx],
+                            std::ios::binary | std::ios::app
+                        );
+                    }
+
+                    // Используем нашу функцию записи вместо reinterpret_cast
+                    write_uint16_LE(*bucket_files[bucket_idx], number);
+                }
+
+                numbers_processed += numbers_read;
+
+                // Периодически закрываем файлы чтобы освободить дескрипторы
+                if (numbers_processed % FLUSH_INTERVAL == 0) {
+                    for (auto& file_ptr : bucket_files) {
+                        if (file_ptr) {
+                            file_ptr->flush();
+                            // Можно закрыть, но тогда придется открывать снова
+                            // file_ptr.reset();
+                        }
+                    }
+                }
+            }
+
+            // Явно закрываем все файлы (деструкторы сделают это, но явно лучше)
+            for (auto& file_ptr : bucket_files) {
+                if (file_ptr) {
+                    file_ptr->close();
+                }
+            }
+        }
+
+        // 3. Сортировка и объединение
+        std::cout << "  Сортировка корзин..." << std::endl;
+        std::ofstream out_file(output_file, std::ios::binary | std::ios::trunc);
+        if (!out_file) {
+            std::cerr << "Ошибка создания выходного файла" << std::endl;
+            return;
+        }
+
+        size_t total_written = 0;
+
+        for (size_t i = 0; i < bucket_count; ++i) {
+            const std::string& bucket_file = filenames[i];
+
+            if (!std::filesystem::exists(bucket_file)) continue;
+
+            uint64_t bucket_size = std::filesystem::file_size(bucket_file);
+            if (bucket_size == 0) {
+                std::filesystem::remove(bucket_file);
+                continue;
+            }
+
+            uint64_t bucket_numbers = bucket_size / sizeof(uint16_t);
+
+            // Читаем корзину
+            std::vector<uint16_t> bucket_data(bucket_numbers);
+            {
+                std::ifstream b_file(bucket_file, std::ios::binary);
+                if (!b_file) {
+                    std::cerr << "Ошибка открытия корзины " << i << std::endl;
+                    continue;
+                }
+
+                // Читаем через буфер
+                const size_t READ_BUF_SIZE = 1024 * 1024;
+                std::vector<char> read_buffer(READ_BUF_SIZE * 2);
+                size_t total_read = 0;
+
+                while (total_read < bucket_size) {
+                    size_t to_read = std::min(READ_BUF_SIZE * 2, bucket_size - total_read);
+                    b_file.read(read_buffer.data(), to_read);
+                    size_t bytes_read = b_file.gcount();
+
+                    // Копируем в bucket_data
+                    size_t numbers_in_buf = bytes_read / sizeof(uint16_t);
+                    for (size_t j = 0; j < numbers_in_buf; ++j) {
+                        const char* byte_ptr = read_buffer.data() + j * sizeof(uint16_t);
+                        bucket_data[total_read / sizeof(uint16_t) + j] = read_uint16_LE(byte_ptr);
+                    }
+
+                    total_read += bytes_read;
+                }
+            }
+
+            // Сортируем
+            std::sort(bucket_data.begin(), bucket_data.end());
+
+            // Записываем чистым способом
+            for (uint16_t num : bucket_data) {
+                write_uint16_LE(out_file, num);
+            }
+
+            total_written += bucket_numbers;
+            std::filesystem::remove(bucket_file);
+
+            if ((i + 1) % 100 == 0) {
+                std::cout << "  Обработано " << (i + 1) << "/" << bucket_count
+                    << " корзин" << std::endl;
+            }
+        }
+
+        out_file.close();
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+            end_time - start_time);
+
+        std::cout << "BucketSort завершен за " << duration.count() / 1000.0
+            << " секунд" << std::endl;
+        std::cout << "  Записано чисел: " << total_written << std::endl;
     }
     
     // ---------- Генерация бинарного файла со случайными 16-битными числами
@@ -257,8 +370,8 @@ public:
         std::cout << "..." << std::endl;
         file.close();
     }
-private:
 
+private:
     //хелперы для чтения-записи
     //собираем байты в число
     static inline uint16_t read_uint16_LE(const char* bytes) {
@@ -300,13 +413,6 @@ private:
     static void counting_sort_by_digit(const std::string& input, const std::string& output,
         uint16_t base, int digit) {
 
-        /*auto start_time = std::chrono::high_resolution_clock::now();
-
-        if (debug) {
-            std::cout << "    CountingSort: разряд " << digit
-                << " (base=" << base << ")" << std::endl;
-        }*/
-
         // 1. Определяем размер файла
         std::ifstream in_file(input, std::ios::binary | std::ios::ate);
         if (!in_file) {
@@ -339,8 +445,6 @@ private:
         constexpr size_t BYTE_BUFFER_SIZE = BUFFER_SIZE * sizeof(uint16_t);
         std::vector<char> byte_buffer(BYTE_BUFFER_SIZE);
 
-        //uint64_t numbers_processed = 0;
-
         while (true) {
             in_file.read(byte_buffer.data(), byte_buffer.size());
             size_t bytes_read = in_file.gcount();
@@ -355,13 +459,6 @@ private:
                 uint8_t digit_value = get_digit(num, digit, base);
                 ++counters[digit_value];
             }
-
-            //numbers_processed += numbers_read;
-
-            /*if (debug && numbers_processed % (10 * 1024 * 1024) == 0) {
-                std::cout << "      Подсчет: " << numbers_processed / 1000000
-                    << " млн чисел..." << std::endl;
-            }*/
         }
         in_file.close();
 
@@ -383,9 +480,6 @@ private:
 
         std::fstream out_file_rw(output, std::ios::binary | std::ios::in | std::ios::out);
 
-        // Позиции для записи с конца (копируем counters)
-        std::vector<uint64_t> write_positions = counters;
-
         // Читаем файл буферами c конца
         std::ifstream in_file_second_pass(input, std::ios::binary);
         if (!in_file_second_pass) {
@@ -401,21 +495,9 @@ private:
         constexpr size_t BUFFER_BYTES = 1024 * 1024 * sizeof(uint16_t); // 2 МБ
         std::vector<char> _byte_buffer(BUFFER_BYTES);
 
-        /*std::cout << "=== ОТЛАДКА ===" << std::endl;
-        std::cout << "total_numbers: " << total_numbers << std::endl;
-        std::cout << "remaining_numbers перед циклом: " << remaining_numbers << std::endl;*/
-        
         // Проверяем позицию в файле
         std::streampos pos = in_file_second_pass.tellg();
-        //std::cout << "Позиция в файле после seekg: " << pos << std::endl;
-
-        // Проверяем флаги файла
-        /*std::cout << "Флаги файла: good=" << in_file.good()
-            << " eof=" << in_file.eof()
-            << " fail=" << in_file.fail()
-            << " bad=" << in_file.bad() << std::endl;*/
-
-
+        
         while (remaining_numbers > 0) {
             // Сколько байт читать
             size_t bytes_to_read = std::min(
@@ -428,30 +510,12 @@ private:
             uint64_t block_start_byte = (remaining_numbers - elements_to_read) * sizeof(uint16_t);
             
             in_file_second_pass.seekg(block_start_byte);  
-            in_file_second_pass.clear(); // c,
-
-            //std::cout << "to_read: " << bytes_to_read << std::endl;
-            //std::cout << "block_start_byte: " << block_start_byte << std::endl;
+            in_file_second_pass.clear(); // cбрасываем флаги
 
             // Читаем байты из потока
             in_file_second_pass.read(_byte_buffer.data(), bytes_to_read);
             size_t bytes_read = in_file_second_pass.gcount();  
             size_t elements_read = bytes_read / sizeof(uint16_t);
-
-            //std::cout << "bytes_read: " << bytes_read << std::endl;
-            //std::cout << "Флаги после чтения: good=" << in_file_second_pass.good()  // ← ВТОРОЙ ПАСС!
-            //    << " eof=" << in_file_second_pass.eof()
-            //    << " fail=" << in_file_second_pass.fail()
-            //    << " bad=" << in_file_second_pass.bad() << std::endl;
-
-            // Проверяем первые несколько прочитанных чисел
-            //std::cout << "Первые 5 чисел в buffer: ";
-            //for (int k = 0; k < std::min(5, (int)elements_to_read); ++k) {
-            //    const char* byte_ptr = _byte_buffer.data() + k * sizeof(uint16_t);
-            //    uint16_t num = read_uint16_LE(byte_ptr);  // читаем как число
-            //    std::cout << num << " ";
-            //}
-            //std::cout << std::endl;
 
             if (elements_read == 0) break;
 
@@ -461,27 +525,72 @@ private:
                 uint16_t num = read_uint16_LE(byte_ptr);
                 uint8_t digit_value = get_digit(num, digit, base);
 
-                uint64_t pos = --write_positions[digit_value];
+                uint64_t pos = --counters[digit_value];
                 uint64_t byte_pos = pos * sizeof(uint16_t);
 
                 out_file_rw.seekp(byte_pos);
                 write_uint16_LE(out_file_rw, num);
             }
-
             remaining_numbers -= elements_read;
         }
 
         in_file_second_pass.close();
         out_file_rw.close();
-
-        /*auto end_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            end_time - start_time);
-
-        if (debug) {
-            std::cout << "    Завершено за " << duration.count() / 1000.0
-                << " сек, чисел: " << total_numbers << std::endl;
-        }*/
     }
 
+    //---------вспомогательные функции для Bucket Sort -------
+    static size_t get_bucket_index(uint16_t number, uint16_t max_value, size_t bucket_count) {
+
+        uint64_t index = (static_cast<uint64_t>(number) * static_cast<uint64_t>(bucket_count))
+            / (static_cast<uint64_t>(max_value) + 1);
+
+        return static_cast<size_t>(index);
+    };
+
+    // Структура для хранения буфера корзины
+    struct BucketBuffer {
+        std::vector<uint16_t> buffer;
+        std::string filename;
+        size_t count = 0;
+
+        BucketBuffer(const std::string& base_name, size_t bucket_id)
+            : filename(base_name + "_bucket_" + std::to_string(bucket_id) + ".tmp") {
+            buffer.reserve(1024 * 1024); // 1 МБ чисел
+        }
+
+        ~BucketBuffer() {
+            flush();
+        }
+
+        void add(uint16_t value) {
+            buffer.push_back(value);
+            count++;
+            if (buffer.size() >= buffer.capacity()) {
+                flush();
+            }
+        }
+
+        void flush() {
+            if (buffer.empty()) return;
+
+            std::ofstream file(filename, std::ios::binary | std::ios::app);
+            if (file) {
+                // Записываем все числа разом
+                file.write(reinterpret_cast<const char*>(buffer.data()),
+                    buffer.size() * sizeof(uint16_t));
+            }
+            buffer.clear();
+        }
+    };
+
+    // Функция для добавления в корзину
+    void add_to_bucket(uint16_t number, size_t bucket_index,
+        std::vector<BucketBuffer>& buckets) {
+        if (bucket_index >= buckets.size()) {
+            std::cerr << "Ошибка: индекс корзины " << bucket_index
+                << " вне диапазона!" << std::endl;
+            return;
+        }
+        buckets[bucket_index].add(number);
+    }
 };

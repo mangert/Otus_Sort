@@ -144,9 +144,9 @@ int main(int argc, char* argv[]) {
 		BinaryFileSorter b;
 		std::string input_file = "input-radix";
 		std::string output_file = "output-radix";
-		BinaryFileSorter::generate_random_file(50, input_file);
+		BinaryFileSorter::generate_random_file(1000000, input_file);
 		BinaryFileSorter::peekBinaryFile(input_file, 50);
-		BinaryFileSorter::radix_sort(input_file, output_file, 256, std::numeric_limits<uint16_t>::max());
+		BinaryFileSorter::bucket_sort(input_file, output_file, 65535, 1000);
 		std::cout << "------------------------\n";
 		BinaryFileSorter::peekBinaryFile(output_file, 50);
 
