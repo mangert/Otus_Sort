@@ -142,9 +142,9 @@ int main(int argc, char* argv[]) {
 	} else {		
 		//std::cout << "Unknown mode\n";
 		BinaryFileSorter b;
-		std::string input_file = "input-radix";
-		std::string output_file = "output-radix";
-		BinaryFileSorter::generate_random_file(1000000, input_file);
+		std::string input_file = "input-bucket";
+		std::string output_file = "output-bucket";
+		BinaryFileSorter::generate_random_file(10000, input_file);
 		BinaryFileSorter::peekBinaryFile(input_file, 50);
 		BinaryFileSorter::bucket_sort(input_file, output_file, 65535, 1000);
 		std::cout << "------------------------\n";

@@ -155,9 +155,9 @@ public:
         uint16_t max_value = std::numeric_limits<uint16_t>::max(),
         size_t bucket_count = 256) {
 
-        auto start_time = std::chrono::high_resolution_clock::now();
+        //auto start_time = std::chrono::high_resolution_clock::now();
 
-        // 1. Не открываем все файлы сразу - только имена
+        // 1. Формируем имена временных файлов
         std::vector<std::string> filenames(bucket_count);
         for (size_t i = 0; i < bucket_count; ++i) {
             filenames[i] = output_file + "_b" + std::to_string(i) + ".tmp";
@@ -177,8 +177,8 @@ public:
             // Вектор для отслеживания открытых файлов
             std::vector<std::unique_ptr<std::ofstream>> bucket_files(bucket_count);
 
-            uint64_t numbers_processed = 0;
-            constexpr size_t FLUSH_INTERVAL = 10000; // Закрываем файлы периодически
+            //uint64_t numbers_processed = 0;
+            //constexpr size_t FLUSH_INTERVAL = 10000; // Закрываем файлы периодически
 
             while (true) {
                 in_file.read(byte_buffer.data(), byte_buffer.size());
@@ -200,22 +200,21 @@ public:
                         );
                     }
 
-                    // Используем нашу функцию записи вместо reinterpret_cast
+                    //Записываем в нужную корзинку
                     write_uint16_LE(*bucket_files[bucket_idx], number);
                 }
 
-                numbers_processed += numbers_read;
+                //numbers_processed += numbers_read;
 
                 // Периодически закрываем файлы чтобы освободить дескрипторы
-                if (numbers_processed % FLUSH_INTERVAL == 0) {
+                /*if (numbers_processed % FLUSH_INTERVAL == 0) {
                     for (auto& file_ptr : bucket_files) {
                         if (file_ptr) {
                             file_ptr->flush();
-                            // Можно закрыть, но тогда придется открывать снова
-                            // file_ptr.reset();
+                            file_ptr.reset();
                         }
                     }
-                }
+                }*/
             }
 
             // Явно закрываем все файлы (деструкторы сделают это, но явно лучше)
@@ -227,14 +226,14 @@ public:
         }
 
         // 3. Сортировка и объединение
-        std::cout << "  Сортировка корзин..." << std::endl;
+        //std::cout << "  Сортировка корзин..." << std::endl;
         std::ofstream out_file(output_file, std::ios::binary | std::ios::trunc);
         if (!out_file) {
             std::cerr << "Ошибка создания выходного файла" << std::endl;
             return;
         }
 
-        size_t total_written = 0;
+        //size_t total_written = 0;
 
         for (size_t i = 0; i < bucket_count; ++i) {
             const std::string& bucket_file = filenames[i];
@@ -259,7 +258,7 @@ public:
                 }
 
                 // Читаем через буфер
-                const size_t READ_BUF_SIZE = 1024 * 1024;
+                constexpr size_t READ_BUF_SIZE = 1024 * 1024;
                 std::vector<char> read_buffer(READ_BUF_SIZE * 2);
                 size_t total_read = 0;
 
@@ -280,31 +279,32 @@ public:
             }
 
             // Сортируем
-            std::sort(bucket_data.begin(), bucket_data.end());
+            //std::sort(bucket_data.begin(), bucket_data.end());
+            Sorter<uint16_t>::shell_sort_sedgewick(bucket_data.data(), bucket_data.size());
 
             // Записываем чистым способом
             for (uint16_t num : bucket_data) {
                 write_uint16_LE(out_file, num);
             }
 
-            total_written += bucket_numbers;
+            //total_written += bucket_numbers;
             std::filesystem::remove(bucket_file);
 
-            if ((i + 1) % 100 == 0) {
+            /*if ((i + 1) % 100 == 0) {
                 std::cout << "  Обработано " << (i + 1) << "/" << bucket_count
                     << " корзин" << std::endl;
-            }
+            }*/
         }
 
         out_file.close();
 
-        auto end_time = std::chrono::high_resolution_clock::now();
+        /*auto end_time = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
             end_time - start_time);
 
         std::cout << "BucketSort завершен за " << duration.count() / 1000.0
             << " секунд" << std::endl;
-        std::cout << "  Записано чисел: " << total_written << std::endl;
+        std::cout << "  Записано чисел: " << total_written << std::endl;*/
     }
     
     // ---------- Генерация бинарного файла со случайными 16-битными числами
@@ -411,7 +411,7 @@ private:
 
     // Стабильная сортировка подсчетом по одному разряду
     static void counting_sort_by_digit(const std::string& input, const std::string& output,
-        uint16_t base, int digit) {
+        uint16_t base, size_t digit) {
 
         // 1. Определяем размер файла
         std::ifstream in_file(input, std::ios::binary | std::ios::ate);
@@ -545,52 +545,5 @@ private:
             / (static_cast<uint64_t>(max_value) + 1);
 
         return static_cast<size_t>(index);
-    };
-
-    // Структура для хранения буфера корзины
-    struct BucketBuffer {
-        std::vector<uint16_t> buffer;
-        std::string filename;
-        size_t count = 0;
-
-        BucketBuffer(const std::string& base_name, size_t bucket_id)
-            : filename(base_name + "_bucket_" + std::to_string(bucket_id) + ".tmp") {
-            buffer.reserve(1024 * 1024); // 1 МБ чисел
-        }
-
-        ~BucketBuffer() {
-            flush();
-        }
-
-        void add(uint16_t value) {
-            buffer.push_back(value);
-            count++;
-            if (buffer.size() >= buffer.capacity()) {
-                flush();
-            }
-        }
-
-        void flush() {
-            if (buffer.empty()) return;
-
-            std::ofstream file(filename, std::ios::binary | std::ios::app);
-            if (file) {
-                // Записываем все числа разом
-                file.write(reinterpret_cast<const char*>(buffer.data()),
-                    buffer.size() * sizeof(uint16_t));
-            }
-            buffer.clear();
-        }
-    };
-
-    // Функция для добавления в корзину
-    void add_to_bucket(uint16_t number, size_t bucket_index,
-        std::vector<BucketBuffer>& buckets) {
-        if (bucket_index >= buckets.size()) {
-            std::cerr << "Ошибка: индекс корзины " << bucket_index
-                << " вне диапазона!" << std::endl;
-            return;
-        }
-        buckets[bucket_index].add(number);
-    }
+    };    
 };
