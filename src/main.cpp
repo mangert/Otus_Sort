@@ -8,6 +8,7 @@
 #include "LinearSorter.h"
 #include "LinearTest.h"
 #include "BinaryFileSorter.cpp"
+#include "BinaryTest.cpp"
 
 void print_help(const char* prog_name); //функция для вывода справки по аргументам cli
 
@@ -139,18 +140,48 @@ int main(int argc, char* argv[]) {
 				test.run_all(test_cases[counter].info);
 			};
 		};
-	} else {		
+	}
+	else {
 		//std::cout << "Unknown mode\n";
-		BinaryFileSorter b;
+		/*BinaryFileSorter b;
 		std::string input_file = "input-bucket";
 		std::string output_file = "output-bucket";
 		BinaryFileSorter::generate_random_file(10000, input_file);
 		BinaryFileSorter::peekBinaryFile(input_file, 50);
 		BinaryFileSorter::bucket_sort(input_file, output_file, 65535, 1000);
 		std::cout << "------------------------\n";
-		BinaryFileSorter::peekBinaryFile(output_file, 50);
+		BinaryFileSorter::peekBinaryFile(output_file, 50);*/
+		//using FuncPtr = void(*)(std::string&, std::string&, uint16_t);
+		std::vector<BinaryTest::TestCase> test_cases;
 
-	};
+		// CountingSort
+		test_cases.push_back({
+			[](std::string& input, std::string& output, uint16_t) {
+				BinaryFileSorter::counting_sort(input, output, std::numeric_limits<uint16_t>::max());
+			},
+			"CountingSort"
+			});
+
+		// RadixSort base=256
+		test_cases.push_back({
+			[](std::string& input, std::string& output, uint16_t) {
+				BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
+			},
+			"RadixSort (base=256)"
+			});
+
+
+		// BucketSort
+		test_cases.push_back({
+			[](std::string& input, std::string& output, uint16_t) {
+				BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
+			},
+			"BucketSort"
+			});
+
+		BinaryTest tester(std::move(test_cases));
+		tester.test(1000000); // тест на 1 млн чисел
+	}	
 	
 	return 0; 
 }

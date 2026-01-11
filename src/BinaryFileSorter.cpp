@@ -8,6 +8,7 @@
 #include <chrono>
 #include "Sorter.h"
 
+//класс содержит статические функции линейный сортировок файла и функцию, генерирующую бинарный файл из случайных чисел
 class BinaryFileSorter {
 
 public:       
@@ -92,7 +93,7 @@ public:
     
     // ---------- Radix sort -----------------
     static void radix_sort(const std::string& input, const std::string& output,
-        uint16_t base = 256, uint16_t max_value = std::numeric_limits<uint16_t>::max()) {
+        uint16_t max_value = std::numeric_limits<uint16_t>::max(), uint16_t base = 256) {
         
         // Проверяем существование входного файла
         if (!std::filesystem::exists(input)) {
@@ -170,16 +171,13 @@ public:
                 std::cerr << "Ошибка открытия входного файла" << std::endl;
                 return;
             }
-
+            
             constexpr size_t BUFFER_SIZE = 1024 * 1024;
             std::vector<char> byte_buffer(BUFFER_SIZE * 2);
-
             // Вектор для отслеживания открытых файлов
             std::vector<std::unique_ptr<std::ofstream>> bucket_files(bucket_count);
-
             //uint64_t numbers_processed = 0;
             //constexpr size_t FLUSH_INTERVAL = 10000; // Закрываем файлы периодически
-
             while (true) {
                 in_file.read(byte_buffer.data(), byte_buffer.size());
                 size_t bytes_read = in_file.gcount();
@@ -199,7 +197,6 @@ public:
                             std::ios::binary | std::ios::app
                         );
                     }
-
                     //Записываем в нужную корзинку
                     write_uint16_LE(*bucket_files[bucket_idx], number);
                 }
@@ -217,7 +214,7 @@ public:
                 }*/
             }
 
-            // Явно закрываем все файлы (деструкторы сделают это, но явно лучше)
+            // Явно закрываем все файлы
             for (auto& file_ptr : bucket_files) {
                 if (file_ptr) {
                     file_ptr->close();
