@@ -15,7 +15,7 @@ void print_help(const char* prog_name); //функция для вывода с�
 int main(int argc, char* argv[]) {
 	setlocale(LC_ALL, "Russian");
 
-	std::string mode = "bin"; //значение по умолчанию - чтобы проще запускать
+	std::string mode = "binary"; //значение по умолчанию - чтобы проще запускать
 	
 	if (argc > 1) {
 		mode = argv[1];
@@ -141,47 +141,26 @@ int main(int argc, char* argv[]) {
 			};
 		};
 	}
-	else {
-		//std::cout << "Unknown mode\n";
-		/*BinaryFileSorter b;
-		std::string input_file = "input-bucket";
-		std::string output_file = "output-bucket";
-		BinaryFileSorter::generate_random_file(10000, input_file);
-		BinaryFileSorter::peekBinaryFile(input_file, 50);
-		BinaryFileSorter::bucket_sort(input_file, output_file, 65535, 1000);
-		std::cout << "------------------------\n";
-		BinaryFileSorter::peekBinaryFile(output_file, 50);*/
-		//using FuncPtr = void(*)(std::string&, std::string&, uint16_t);
-		std::vector<BinaryTest::TestCase> test_cases;
-
-		// CountingSort
-		test_cases.push_back({
-			[](std::string& input, std::string& output, uint16_t) {
-				BinaryFileSorter::counting_sort(input, output, std::numeric_limits<uint16_t>::max());
-			},
-			"CountingSort"
-			});
-
-		// RadixSort base=256
-		test_cases.push_back({
-			[](std::string& input, std::string& output, uint16_t) {
-				BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
-			},
-			"RadixSort (base=256)"
-			});
-
-
-		// BucketSort
-		test_cases.push_back({
-			[](std::string& input, std::string& output, uint16_t) {
-				BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
-			},
-			"BucketSort"
-			});
+	else if (mode == "binary") {
+		
+		auto test_cases = get_binary_tests(); //набор функций сортировок
 
 		BinaryTest tester(std::move(test_cases));
-		tester.test(1000000); // тест на 1 млн чисел
-	}	
+		
+		for (size_t n = 1000000; n <= 1000000000; n *= 10) {		
+			std::cout << "Тестирование для " << n << " чисел \n";
+			tester.test(n); // тест на n чисел
+		};
+		//BinaryFileSorter::peekBinaryFile("BucketSort1000.bin", 1002);
+		/*std::string in = "test_in";
+		std::string out = "test_out";
+		BinaryFileSorter::generate_random_file(n, in);
+		BinaryFileSorter::bucket_sort(in, out, 65535, 1000);
+		BinaryFileSorter::peekBinaryFile(out, 1002);*/
+	}
+	else {
+		std::cout << "Uknown mode" << std::endl;
+	}
 	
 	return 0; 
 }
@@ -191,6 +170,7 @@ void print_help(const char* prog_name) {
 	std::cout << "Modes:\n";
 	std::cout << "  internal   - Test internal sorts\n";
 	std::cout << "  external   - Test external sorts\n";
-	std::cout << "  linear     - Test linear sorts (default)\n";
-	std::cout << "  --help       - Show this message\n";
+	std::cout << "  linear     - Test linear sorts\n";
+	std::cout << "  linear     - Test binary file sorts (default)\n";
+	std::cout << "  --help     - Show this message\n";
 }

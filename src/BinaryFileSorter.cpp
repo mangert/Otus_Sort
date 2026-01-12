@@ -154,30 +154,53 @@ public:
     // ---------- Bucket sort -----------------
     static void bucket_sort(std::string& input_file, std::string& output_file,
         uint16_t max_value = std::numeric_limits<uint16_t>::max(),
-        size_t bucket_count = 256) {
+        size_t bucket_count = 256) {        
+        
+        // Устанавливаем ограничение - при большем количестве корзин могут некорректно открываться / закрываться
+        constexpr size_t MAX_BUCKETS = 256;
+        if (bucket_count > MAX_BUCKETS) {
+            std::cout << "Предупреждение: bucket_count ограничен " << MAX_BUCKETS
+                << ", установлено " << MAX_BUCKETS << std::endl;
+            bucket_count = MAX_BUCKETS;
+        }        
 
-        //auto start_time = std::chrono::high_resolution_clock::now();
-
-        // 1. Формируем имена временных файлов
+        // 1. Имена файлов
         std::vector<std::string> filenames(bucket_count);
         for (size_t i = 0; i < bucket_count; ++i) {
             filenames[i] = output_file + "_b" + std::to_string(i) + ".tmp";
+            // Очищаем старые файлы
+            if (std::filesystem::exists(filenames[i])) {
+                std::filesystem::remove(filenames[i]);
+            }
         }
 
-        // 2. Распределение с открытием файлов по мере необходимости
+        // 2. Распределение        
         {
             std::ifstream in_file(input_file, std::ios::binary);
             if (!in_file) {
                 std::cerr << "Ошибка открытия входного файла" << std::endl;
                 return;
             }
-            
+
+            //Открываем файлы
+            std::vector<std::ofstream> bucket_files;
+            bucket_files.reserve(bucket_count);
+
+            for (size_t i = 0; i < bucket_count; ++i) {
+                bucket_files.emplace_back(filenames[i], std::ios::binary | std::ios::trunc);
+                if (!bucket_files.back()) {
+                    std::cerr << "КРИТИЧЕСКАЯ ОШИБКА: не могу открыть файл для корзины " << i
+                        << ". Возможно, слишком много открытых файлов." << std::endl;
+                    return;
+                }
+            }
+
             constexpr size_t BUFFER_SIZE = 1024 * 1024;
             std::vector<char> byte_buffer(BUFFER_SIZE * 2);
-            // Вектор для отслеживания открытых файлов
-            std::vector<std::unique_ptr<std::ofstream>> bucket_files(bucket_count);
-            //uint64_t numbers_processed = 0;
-            //constexpr size_t FLUSH_INTERVAL = 10000; // Закрываем файлы периодически
+
+            uint64_t numbers_processed = 0;
+            constexpr size_t FLUSH_INTERVAL = 100000; // 100K чисел
+
             while (true) {
                 in_file.read(byte_buffer.data(), byte_buffer.size());
                 size_t bytes_read = in_file.gcount();
@@ -189,48 +212,30 @@ public:
                     const char* byte_ptr = byte_buffer.data() + i * 2;
                     uint16_t number = read_uint16_LE(byte_ptr);
                     size_t bucket_idx = get_bucket_index(number, max_value, bucket_count);
-
-                    // Открываем файл если нужно
-                    if (!bucket_files[bucket_idx]) {
-                        bucket_files[bucket_idx] = std::make_unique<std::ofstream>(
-                            filenames[bucket_idx],
-                            std::ios::binary | std::ios::app
-                        );
-                    }
-                    //Записываем в нужную корзинку
-                    write_uint16_LE(*bucket_files[bucket_idx], number);
+                    
+                    write_uint16_LE(bucket_files[bucket_idx], number);
                 }
 
-                //numbers_processed += numbers_read;
+                numbers_processed += numbers_read;
 
-                // Периодически закрываем файлы чтобы освободить дескрипторы
-                /*if (numbers_processed % FLUSH_INTERVAL == 0) {
-                    for (auto& file_ptr : bucket_files) {
-                        if (file_ptr) {
-                            file_ptr->flush();
-                            file_ptr.reset();
-                        }
+                // сброс буфера, файлы не закрываем
+                if (numbers_processed % FLUSH_INTERVAL == 0) {
+                    for (auto& file : bucket_files) {
+                        file.flush();
                     }
-                }*/
+                }                
             }
-
-            // Явно закрываем все файлы
-            for (auto& file_ptr : bucket_files) {
-                if (file_ptr) {
-                    file_ptr->close();
-                }
+            // в конце сбрасываем все буферы
+            for (auto& file : bucket_files) {
+                file.flush();
             }
         }
-
-        // 3. Сортировка и объединение
-        //std::cout << "  Сортировка корзин..." << std::endl;
+        // 3. Сортировка и объединение        
         std::ofstream out_file(output_file, std::ios::binary | std::ios::trunc);
         if (!out_file) {
             std::cerr << "Ошибка создания выходного файла" << std::endl;
             return;
-        }
-
-        //size_t total_written = 0;
+        }       
 
         for (size_t i = 0; i < bucket_count; ++i) {
             const std::string& bucket_file = filenames[i];
@@ -275,33 +280,16 @@ public:
                 }
             }
 
-            // Сортируем
-            //std::sort(bucket_data.begin(), bucket_data.end());
-            Sorter<uint16_t>::shell_sort_sedgewick(bucket_data.data(), bucket_data.size());
+            // Сортируем корзинку            
+            Sorter<uint16_t>::shell_sort_sedgewick(bucket_data.data(), bucket_data.size());           
 
-            // Записываем чистым способом
+            // Записываем результат в файл
             for (uint16_t num : bucket_data) {
                 write_uint16_LE(out_file, num);
-            }
-
-            //total_written += bucket_numbers;
+            }            
             std::filesystem::remove(bucket_file);
-
-            /*if ((i + 1) % 100 == 0) {
-                std::cout << "  Обработано " << (i + 1) << "/" << bucket_count
-                    << " корзин" << std::endl;
-            }*/
         }
-
         out_file.close();
-
-        /*auto end_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
-            end_time - start_time);
-
-        std::cout << "BucketSort завершен за " << duration.count() / 1000.0
-            << " секунд" << std::endl;
-        std::cout << "  Записано чисел: " << total_written << std::endl;*/
     }
     
     // ---------- Генерация бинарного файла со случайными 16-битными числами
@@ -537,10 +525,15 @@ private:
 
     //---------вспомогательные функции для Bucket Sort -------
     static size_t get_bucket_index(uint16_t number, uint16_t max_value, size_t bucket_count) {
+        
+        if (bucket_count <= 1) return 0;
 
-        uint64_t index = (static_cast<uint64_t>(number) * static_cast<uint64_t>(bucket_count))
-            / (static_cast<uint64_t>(max_value) + 1);
+        // Используем double для точности
+        double ratio = static_cast<double>(number) / (static_cast<double>(max_value) + 1.0);
+        size_t index = static_cast<size_t>(ratio * bucket_count);
 
-        return static_cast<size_t>(index);
+        // Защита от крайнего случая
+        return (index >= bucket_count) ? (bucket_count - 1) : index;
+        
     };    
 };

@@ -5,6 +5,7 @@
 #include "Test.h"
 #include <string>
 #include "LinearSorter.h"
+#include "BinaryTest.cpp"
 
 struct TestCase32 {
 	using FuncPtr = void(*)(uint32_t*, size_t);
@@ -116,4 +117,48 @@ inline std::vector<TestCaseLinear> get_all_tests_linear() {
 			"radix sort with base 8"},
 	};
 
-}
+};
+
+inline std::vector<BinaryTest::TestCase> get_binary_tests() {
+	
+	std::vector<BinaryTest::TestCase> test_cases;
+
+	// CountingSort
+	test_cases.push_back({
+		[](std::string& input, std::string& output, uint16_t) {
+			BinaryFileSorter::counting_sort(input, output, std::numeric_limits<uint16_t>::max());
+		},
+		"CountingSort"
+		});
+
+	// RadixSort base=256
+	test_cases.push_back({
+		[](std::string& input, std::string& output, uint16_t) {
+			BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
+		},
+		"RadixSort (base=256)",
+		100000000
+		});
+
+	// RadixSort base=128
+	test_cases.push_back({
+		[](std::string& input, std::string& output, uint16_t) {
+			BinaryFileSorter::radix_sort(input, output, std::numeric_limits<uint16_t>::max(), 128);
+		},
+		"RadixSort (base=128)",
+		100000000
+		});
+
+
+	// BucketSort с 256 корзинами
+	test_cases.push_back({
+		[](std::string& input, std::string& output, uint16_t) {
+			BinaryFileSorter::bucket_sort(input, output, std::numeric_limits<uint16_t>::max(), 256);
+		},
+		"BucketSort256",
+		100000000
+		});
+	
+	return test_cases;
+
+};

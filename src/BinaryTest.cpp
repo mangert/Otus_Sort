@@ -16,7 +16,8 @@ public:
 
     struct TestCase {
         SortFunction func;
-        std::string name;        
+        std::string name;
+        size_t max_n = 0;
     };
 
     BinaryTest(std::vector<TestCase> test_cases)
@@ -26,7 +27,7 @@ public:
     // Полная программа тестирования
     void test(size_t size) {
         namespace fs = std::filesystem;
-        std::cout << "\n=== Подготовка - генерация тестового файла ===\n";
+        std::cout << "\n=== Подготовка - генерация тестового файла ===\n\n";
         std::string input_file = "input_data.bin";
 
         try {
@@ -42,7 +43,12 @@ public:
         
             // Тестирование всех случаев
             for (auto& test_case: test_cases_) {
-                std::cout << "\n=== Запуск: " << test_case.name << " ===\n";
+
+                if (test_case.max_n > 0 && size >= test_case.max_n) {
+                    std::cout << "\n=== Тест пропущен (таймаут) \n";
+                    continue;
+                }
+                std::cout << "\n=== Запуск: " << test_case.name << " ===\n\n";
                 std::string output_file = test_case.name + ".bin";
                 start = std::chrono::high_resolution_clock::now();
                 test_case.func(input_file, output_file, std::numeric_limits<uint16_t>::max());
@@ -51,28 +57,27 @@ public:
                 
                 
                 if (verify_sorted_file(output_file, false)) { // false = без прогресса
-                    std::cout << "\nSUCCESS: файл отсортирован за " << duration.count() << " ms\n";
+                    std::cout << "\nУспешно: файл отсортирован за " << duration.count() << " ms\n";
                 }
                 else {
-                    std::cout << "\nFAILED: файл НЕ отсортирован правильно!\n";
+                    std::cout << "\nОшибка: файл отсортирован неправильно!\n";
                 }
                 
                 fs::remove(output_file);
             }
 
             // Очистка тестовых файлов            
-            fs::remove(input_file);
-            //fs::remove(output_files);
+            fs::remove(input_file);           
 
         }
         catch (const std::exception& e) {
             std::cerr << "ERROR: " << e.what() << "\n";
         }
-        std::cout << "\n==========================\n";
+        std::cout << "\n==========================\n\n";
     }
-
     
 private:
+    // служебная функция проверки, что файл отсортирован
     static bool verify_sorted_file(const std::string& filename, bool show_progress = true) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) {
@@ -148,16 +153,17 @@ private:
         file.close();
 
         if (is_sorted) {
-            std::cout << "? Файл корректно отсортирован! Проверено "
+            std::cout << "Файл корректно отсортирован! Проверено "
                 << numbers_checked << " чисел." << std::endl;
         }
         else {
-            std::cout << "? Файл НЕ отсортирован корректно!" << std::endl;
+            std::cout << "Файл НЕ отсортирован корректно!" << std::endl;
         }
 
         return is_sorted;
     }
 
+    //служебная функция для формирования числа из считанных данных файла
     static inline uint16_t read_uint16_LE(const char* bytes) {
         // Little Endian: младший байт первый
         return static_cast<uint16_t>(
