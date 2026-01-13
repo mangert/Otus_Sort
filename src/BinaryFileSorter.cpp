@@ -337,24 +337,7 @@ public:
 
             numbers_written += block_size;
         }
-    };
-
-    // Минимальная версия для быстрой проверки - убрать!!!
-    static void peekBinaryFile(const std::string& filename, int n = 20) {
-        std::ifstream file(filename, std::ios::binary);
-        if (!file) {
-            std::cerr << "Не могу открыть " << filename << std::endl;
-            return;
-        }
-        std::cout << filename << ": ";
-
-        uint16_t num;
-        for (int i = 0; i < n && file.read(reinterpret_cast<char*>(&num), 2); i++) {
-            std::cout << num << " ";
-        }
-        std::cout << "..." << std::endl;
-        file.close();
-    }
+    };    
 
 private:
     //хелперы для чтения-записи

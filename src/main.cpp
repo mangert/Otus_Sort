@@ -150,13 +150,7 @@ int main(int argc, char* argv[]) {
 		for (size_t n = 1000000; n <= 1000000000; n *= 10) {		
 			std::cout << "Тестирование для " << n << " чисел \n";
 			tester.test(n); // тест на n чисел
-		};
-		//BinaryFileSorter::peekBinaryFile("BucketSort1000.bin", 1002);
-		/*std::string in = "test_in";
-		std::string out = "test_out";
-		BinaryFileSorter::generate_random_file(n, in);
-		BinaryFileSorter::bucket_sort(in, out, 65535, 1000);
-		BinaryFileSorter::peekBinaryFile(out, 1002);*/
+		};		
 	}
 	else {
 		std::cout << "Uknown mode" << std::endl;
