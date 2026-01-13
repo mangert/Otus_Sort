@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <iostream>
 #include <vector>
 #include <string>
@@ -12,7 +12,7 @@ class LinearTest {
     static_assert(std::is_integral_v<T>, "Test only works with integral types");
 
 public:
-    using FuncPtr = void(*)(T*, size_t);  // сигнатура функции сортировки
+    using FuncPtr = void(*)(T*, size_t);  // СЃРёРіРЅР°С‚СѓСЂР° С„СѓРЅРєС†РёРё СЃРѕСЂС‚РёСЂРѕРІРєРё
 
     LinearTest(FuncPtr test_run) : test_run(test_run) {};
     LinearTest(T min, T max, FuncPtr test_run) 
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    //генерируем массив случайных чисел в заданном диапазоне
+    //РіРµРЅРµСЂРёСЂСѓРµРј РјР°СЃСЃРёРІ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР» РІ Р·Р°РґР°РЅРЅРѕРј РґРёР°РїР°Р·РѕРЅРµ
     std::shared_ptr<T[]> generate_data(T min, T max, size_t size) {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -45,10 +45,10 @@ private:
         return data;
     };
 
-    //запуск одного теста
+    //Р·Р°РїСѓСЃРє РѕРґРЅРѕРіРѕ С‚РµСЃС‚Р°
     void run_test(int test_num, T* data, size_t size) {
 
-        //сохраняем исходный массив для проверки
+        //СЃРѕС…СЂР°РЅСЏРµРј РёСЃС…РѕРґРЅС‹Р№ РјР°СЃСЃРёРІ РґР»СЏ РїСЂРѕРІРµСЂРєРё
         std::unique_ptr<T[]> _original(new T[size]);
         T* original = _original.get();
         std::copy_n(data, size, original);
@@ -56,7 +56,7 @@ private:
         std::cout << "Test " << test_num << ": ";
 
         try {            
-            //Запуск сортировки с замером времени
+            //Р—Р°РїСѓСЃРє СЃРѕСЂС‚РёСЂРѕРІРєРё СЃ Р·Р°РјРµСЂРѕРј РІСЂРµРјРµРЅРё
             auto start_time = std::chrono::high_resolution_clock::now();
             test_run(data, size);
             auto end_time = std::chrono::high_resolution_clock::now();
@@ -64,7 +64,7 @@ private:
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
                 end_time - start_time);
 
-            //Проверка результата
+            //РџСЂРѕРІРµСЂРєР° СЂРµР·СѓР»СЊС‚Р°С‚Р°
             bool is_correct = verify_result(original, data, size);
 
             std::cout << (is_correct ? "PASS" : "FAIL")
@@ -77,19 +77,19 @@ private:
         }
     }
 
-    //проверка, что отсортировалось и данные не испортились
+    //РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°Р»РѕСЃСЊ Рё РґР°РЅРЅС‹Рµ РЅРµ РёСЃРїРѕСЂС‚РёР»РёСЃСЊ
     bool verify_result(T* original, T* sorted, size_t size) {
-        // Быстрая проверка что отсортировано
+        // Р‘С‹СЃС‚СЂР°СЏ РїСЂРѕРІРµСЂРєР° С‡С‚Рѕ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРѕ
         if (!std::is_sorted(sorted, sorted + size)) return false;
 
-        // Для маленьких массивов - полная проверка
+        // Р”Р»СЏ РјР°Р»РµРЅСЊРєРёС… РјР°СЃСЃРёРІРѕРІ - РїРѕР»РЅР°СЏ РїСЂРѕРІРµСЂРєР°
         if (size <= 10000) {
             std::vector<T> copy(original, original + size);
             std::sort(copy.begin(), copy.end());
             return std::equal(sorted, sorted + size, copy.begin());
         }
 
-        // Для больших - только сумма (быстрее)
+        // Р”Р»СЏ Р±РѕР»СЊС€РёС… - С‚РѕР»СЊРєРѕ СЃСѓРјРјР° (Р±С‹СЃС‚СЂРµРµ)
         T sum_o = 0, sum_s = 0;
         for (size_t i = 0; i < size; ++i) {
             sum_o += original[i];
@@ -100,7 +100,7 @@ private:
     
 
 private:
-    FuncPtr test_run; //функция для тестирования
+    FuncPtr test_run; //С„СѓРЅРєС†РёСЏ РґР»СЏ С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ
     std::vector<size_t> test_cases = { 100, 1000, 10000, 100000, 1000000};    
     T min_val = 0;    
     T max_val = 999;
